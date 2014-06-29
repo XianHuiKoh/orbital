@@ -1,0 +1,70 @@
+<!-- Places Entry -->
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title> Planner</title>
+    <link href="../bootstrap/css/bootstrap.css" rel="stylesheet">
+</head>
+<body>
+<div class="container">
+
+	<form class="form-horizontal" action='/placeentry' method='post'>
+		<div class="form-group">
+			<label class="control-label col-xs-2" for="inputName">Name</label>
+			<div class="col-xs-10"><input id="inputName" class="form-control" type="text" name="name"></div>
+		</div>
+
+		<div class="form-group">
+			<label class="control-label col-xs-2" for="inputImage">Image url</label>
+			<div class="col-xs-10"><input id="inputImage" class="form-control" type="url" name="image"></div>
+		</div>
+
+		<div class="form-group">
+			<label class="control-label col-xs-2" for="inputRating">Rating</label>
+			<div class="col-xs-10">
+			<div class="input-group">
+				<input id="inputRating" class="form-control" type="number" min="0" max="10" name="rating">
+				<span class="input-group-addon">/10</span>
+			</div>
+		</div>
+		</div>
+
+		<div class="form-group">
+			<label class="control-label col-xs-2" for="inputDesc">Description</label>
+			<div class="col-xs-10"><textarea class="form-control" rows="4" name="desc"></textarea></div>
+		</div>
+		<div class="text-center"><button class="btn btn-primary btn-large" type="submit">Submit</button></div>
+	</form>
+
+	<div class="text-center"><h2> Places List </h2></div>
+		<table class="table table-bordered table-striped">
+			<thead>
+        <tr>
+            <th>Name</th>
+            <th width="50%">Description</th>
+						<th>Rating</th>
+						<th>Image</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for place in places %}
+				<tr>
+						<td class="col-xs-2">{{ place.place_name }} </td>
+						<td class="col-xs-6">{{ place.place_desc }} </td>
+						<td class="col-xs-1">{{ place.place_rating }} </td>
+						<td class="col-xs-3">
+							{% if place.place_image.rstrip() != "" %}
+								<a href="{{ place.place_image }}" target="_blank">
+									<img class="img-responsive" src="{{ place.place_image }}">
+								</a>
+							{% else %}
+								<img class="img-responsive" src="../images/no_image.jpg" alt="No Image">
+							{% endif %}
+						</td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
+</body>
+</html>

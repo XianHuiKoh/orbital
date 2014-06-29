@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+{% autoescape true %}
+<html lang="en">
+	<head>
+
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="stylesheet" href="../bootstrap/css/bootstrap.min.css" media="screen">
+  		<link type="text/css" rel="stylesheet" href="../stylesheets/main.css">
+  		<link type="text/css" rel="stylesheet" href="../jquery/jquery-ui-1.11.0.custom/jquery-ui.min.css">
+		<title> We Plan For You La! - {% block title %}{% endblock %}	</title>
+
+		{% block head %}
+		{% endblock %}
+	</head>
+	<body>
+		<!-- Navigation bar -->
+		<nav class="navbar navbar-default navbar-inverse navbar-static-top" role="navigation">
+			<!-- Brand and toggle to get grouped up for better mobile display -->
+			<div class="container">
+				<div class="navbar-header">
+					<button class="navbar-toggle" type="toggle" data-toggle="collapse" data-target="#navbarCollapse">
+						<span class="sr-only">Toggle Navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+					<!-- Logo button -->
+					<a class="navbar-brand" href="http://www.google.com">We Plan For You La!</a>
+				</div>
+
+				<div id="navbarCollapse" class="collapse navbar-collapse">
+					<ul class="nav navbar-nav">
+						<li><a id="navHome" href="/"><span class="glyphicon glyphicon-home"></span> Home</a></li>
+						<li><a id="navPlanner" href="/planner"><span class="glyphicon glyphicon-calendar"></span> Planner</a></li>
+						<li><a id="navAttraction" href="/attraction"><span class="glyphicon glyphicon-camera"></span> Attraction</a></li>
+						<li><a id="navContact" href="/contact"><span class="glyphicon glyphicon-earphone"></span> Contact Us</a></li>
+					</ul>
+				</div>
+			</div>
+		</nav>
+
+		<!-- End of Navigation bar -->
+		{% block content %}
+		{% endblock %}
+		<!-- Jquery -->
+		<script src="../jquery/jquery-2.1.1.min.js"></script>
+		<script src="../bootstrap/js/bootstrap.min.js"></script>
+		<script src="../jquery/jquery-ui-1.11.0.custom/jquery-ui.min.js"></script>
+		<script type="text/javascript" src="../scripts/script.js"></script>
+		<script>
+			/* Find the active tab on navigation bar and chang its state
+				 Based on Title part in individual html file.
+			 */
+			window.onload = function () {
+				var strArr = (document.title).split(" ");
+				var str = strArr[strArr.length - 1];
+				$("#nav" + str).parent().addClass("active");
+			};
+		</script>
+	</body>
+</html>
+{% endautoescape %}

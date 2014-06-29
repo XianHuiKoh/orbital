@@ -1,0 +1,73 @@
+p > input {
+	border:0;
+	font-weight:bold;
+}
+
+p {
+	margin-top: 20px;
+}
+
+h2 {
+	font-family: sans-serif;
+	font-weight: bold;
+}
+
+#selectable_pace .ui-selecting { 
+    background: #FECA40; 
+}
+ 
+#selectable_pace .ui-selected { 
+    background: #F39814; 
+    color: white; 
+}
+  
+#selectable_pace { 
+    list-style-type: none; 
+    margin: 0; 
+    padding: 0; 
+    width: 40%; 
+    display: inline-block;
+}
+  
+#selectable_pace li {
+    list-style-type: none; 
+    margin: 3px; 
+    padding: 0.4em; 
+    font-size: 15px; 
+    height: 40px; 
+    text-align: center;
+}
+
+#selectable_pace li:hover {
+    cursor:pointer;
+}
+
+#selectable_style .ui-selecting { 
+    background: #FECA40; 
+}
+ 
+#selectable_style .ui-selected { 
+    background: #F39814; 
+    color: white; 
+}
+  
+#selectable_style { 
+    list-style-type: none; 
+    margin: 0; 
+    padding: 0; 
+    width: 40%; 
+    display: inline-block;
+}
+  
+#selectable_style li {
+    list-style-type: none; 
+    margin: 3px; 
+    padding: 0.4em; 
+    font-size: 15px; 
+    height: 40px; 
+    text-align: center;
+}
+
+#selectable_style li:hover {
+    cursor:pointer;
+}

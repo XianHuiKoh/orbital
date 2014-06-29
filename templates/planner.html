@@ -1,0 +1,112 @@
+<!-- Home page -->
+{% extends "base.html" %}
+{% block title %}Planner{% endblock %}
+{% block links %}
+{% endblock %}
+
+{% block content %}
+<div class="row">
+<div class="col-md-3">
+	<div id="tabs">
+		<!-- Vertical Tabs -->
+		<ul class="nav nav-pills nav-stacked" id="menu">
+			<li class="active"><a href="#home">Home</a></li>	
+			<li><a href="#date">Date &amp; Time</a></li>
+			<li><a href="#budget">Budget</a></li>
+			<li><a href="#preference">Preference</a></li>
+			<li><a href="#misc">Miscellaneous</a></li>
+		</ul>
+	</div>
+</div>
+<div class="col-md-8">
+	<div class="tab-content">
+		<!-- Home -->
+		<div class="tab-pane active" id="home">
+			<h2>Home</h2>
+			<p>Get started by clicking on the tabs at the side and filling the respective fields!</p>
+			<p><small>*To be changed!*</small></p>
+		</div>
+
+		<!-- Date and Time -->
+		<div class="tab-pane" id="date">
+			<h2>Date &amp; Time</h2>
+			<form>
+				<div class="form-group">
+					<p>From:</p>
+					<input type="text" id="start_datepicker" class="form-control"/>
+				</div>
+				<div class="form-group">
+					<p>To:</p>
+					<input type="text" id="end_datepicker" class="form-control"/>
+				</div>
+				<p>Duration (in days):</p>
+				<input id="inputDuration" class="form-control" type="number" min="0" max="100" name="duration" readonly="true">
+			</form>
+		</div>
+
+		<!-- Budget -->
+		<div class="tab-pane" id="budget">
+			<h2>Budget</h2>
+			<p>
+				<label for="lodging">Lodging:</label>
+				<input type="text" id="lodging">
+			</p>
+			<div id="slider-lodging"></div>
+			<p>
+				<label for="fb">Food and Beverage:</label>
+				<input type="text" id="fb">
+			</p>
+			<div id="slider-food"></div>
+			<p>
+				<label for="shopping">Shopping:</label>
+				<input type="text" id="shopping">
+			</p>
+			<div id="slider-shopping"></div>
+			<p>
+				<label for="miscellaneous">Miscellaneous:</label>
+				<input type="text" id="miscellaneous">
+			</p>
+			<div id="slider-misc"></div>
+		</div>
+
+		<!-- Preference -->
+		<div class="tab-pane" id="preference">
+			<h2>Preference</h2>
+			<p>Pace:
+				<ol id="selectable_pace">
+  					<li class="ui-widget-content">Slow</li>
+  					<li class="ui-widget-content">Moderate</li>
+  					<li class="ui-widget-content">Fast</li>
+  					<li class="ui-widget-content">Hectic</li>
+  				</ol>
+			</p>
+			<p>Style:
+				<ol id="selectable_style">
+  					<li class="ui-widget-content">Culture</li>
+  					<li class="ui-widget-content">Family</li>
+  					<li class="ui-widget-content">Romance</li>
+  					<li class="ui-widget-content">Food</li>
+  				</ol>
+			</p>
+			</div>
+
+		<!-- Miscellaneous -->
+		<div class="tab-pane" id="misc">
+			<h2>Miscellaneous</h2>
+			<form>
+				<p>Number of travelling handicapped individuals:</p>
+				<input id="inputHandicapped" class="form-control" type="number" min="0" max="100" name="handicapped">
+				<p>Number of travelling infants:</p>
+				<input id="inputInfant" class="form-control" type="number" min="0" max="100" name="infants">
+				<p>Food Preference:</p>
+				<label for="food"><input type="radio" id="food" name="food" value="vegetarian" /> Vegetarian</label><br>
+				<label for="food"><input type="radio" id="food" name="food" value="vegan" /> Vegan</label><br>
+				<label for="food"><input type="radio" id="food" name="food" value="chinese" /> Chinese</label><br>
+				<label for="food"><input type="radio" id="food" name="food" value="malay" /> Malay</label><br>
+				<label for="food"><input type="radio" id="food" name="food" value="indian" /> Indian</label>
+			</form>
+		</div>
+	</div>
+</div>
+</div>
+{% endblock %}
