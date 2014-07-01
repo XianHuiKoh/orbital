@@ -59,6 +59,12 @@ $(document).ready(function() {
 		max: 10000,
 		slide: function( event, ui ) {
 			$( "#lodging" ).val( "$" + ui.value );
+			
+			// Update Total Budget accordingly
+			$( '#total-budget' ).html(	ui.value +
+														$('#slider-food').slider('value') +
+														$('#slider-shopping').slider('value') +
+														$('#slider-misc').slider('value') );
 		}
 	});
 
@@ -71,6 +77,12 @@ $(document).ready(function() {
 		max: 10000,
 		slide: function( event, ui ) {
 			$( "#fb" ).val( "$" + ui.value );
+			
+			// Update Total Budget accordingly
+			$( '#total-budget' ).html(	ui.value +
+														$('#slider-lodging').slider('value') +
+														$('#slider-shopping').slider('value') +
+														$('#slider-misc').slider('value') );
 		}
 	});
 
@@ -83,6 +95,13 @@ $(document).ready(function() {
 		max: 10000,
 		slide: function( event, ui ) {
 			$( "#shopping" ).val( "$" + ui.value );
+			
+			// Update Total Budget accordingly
+			$( '#total-budget' ).html(	ui.value +
+														$('#slider-lodging').slider('value') +
+														$('#slider-food').slider('value') +
+														$('#slider-misc').slider('value') );
+
 		}
 	});
 
@@ -95,10 +114,22 @@ $(document).ready(function() {
 		max: 10000,
 		slide: function( event, ui ) {
 			$( "#miscellaneous" ).val( "$" + ui.value );
+
+			// Update Total Budget accordingly
+			$( '#total-budget' ).html(	ui.value +
+														$('#slider-lodging').slider('value') +
+														$('#slider-shopping').slider('value') +
+														$('#slider-food').slider('value') );
+
 		}
 	});
 
 	$( "#miscellaneous" ).val( "$" + $( "#slider-misc" ).slider( "value" ) );
+
+	$( '#total-budget' ).html(	$('#slider-lodging').slider('value') +
+														$('#slider-food').slider('value') +
+														$('#slider-shopping').slider('value') +
+														$('#slider-misc').slider('value') );
 
 	// Selects the desired pace
 	$( "#selectable_pace" ).selectable({
