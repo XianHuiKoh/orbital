@@ -13,8 +13,11 @@ h2 {
 }
 
 #map_canvas {
-    width: 660px;
+    /*
+		width: 660px;
     height: 650px;
+		*/
+		height: 570px;
 }
 
 #selectable_pace .ui-selecting { 
@@ -76,3 +79,5 @@ h2 {
 #selectable_style li:hover {
     cursor:pointer;
 }
+
+
