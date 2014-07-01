@@ -124,17 +124,22 @@ $(document).ready(function() {
 		}
 	});
 
-	$( "#miscellaneous" ).val( "$" + $( "#slider-misc" ).slider( "value" ) );
+	$( "#misc" ).val( "$" + $( "#slider-misc" ).slider( "value" ) );
 
-	$( '#total-budget' ).html(	$('#slider-lodging').slider('value') +
-														$('#slider-fb').slider('value') +
-														$('#slider-shopping').slider('value') +
-														$('#slider-misc').slider('value') );
-	
+	function update_budget() {
+		$( '#total-budget' ).html(	$('#slider-lodging').slider('value') +
+				$('#slider-fb').slider('value') +
+				$('#slider-shopping').slider('value') +
+				$('#slider-misc').slider('value') );
+	}
+
+	update_budget();
+
 	// If slider input is changed, update the corresponding slider
 	$('.slider-val').change(function () {
 		var value = this.value.substring(1);
 		$('#slider-' + $(this).attr('id')).slider('value', parseInt(value));
+		update_budget();
 	});
 
 	// Selects the desired pace
