@@ -12,6 +12,11 @@ h2 {
 	font-weight: bold;
 }
 
+#map_canvas {
+    width: 650px;
+    height: 650px;
+}
+
 #selectable_pace .ui-selecting { 
     background: #FECA40; 
 }

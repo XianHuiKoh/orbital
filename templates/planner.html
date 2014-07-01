@@ -6,22 +6,22 @@
 
 {% block content %}
 <div class="row">
-<div class="col-md-3">
+<div class="col-md-2">
 	<div id="tabs">
 		<!-- Vertical Tabs -->
 		<ul class="nav nav-pills nav-stacked" id="menu">
-			<li class="active"><a href="#home">Home</a></li>	
+			<li><a href="#home">Home</a></li>	
 			<li><a href="#date">Date &amp; Time</a></li>
-			<li><a href="#budget">Budget</a></li>
+			<li class="active"><a href="#budget">Budget</a></li>
 			<li><a href="#preference">Preference</a></li>
 			<li><a href="#misc">Miscellaneous</a></li>
 		</ul>
 	</div>
 </div>
-<div class="col-md-8">
+<div class="col-md-4">
 	<div class="tab-content">
 		<!-- Home -->
-		<div class="tab-pane active" id="home">
+		<div class="tab-pane" id="home">
 			<h2>Home</h2>
 			<p>Get started by clicking on the tabs at the side and filling the respective fields!</p>
 			<p><small>*To be changed!*</small></p>
@@ -45,7 +45,7 @@
 		</div>
 
 		<!-- Budget -->
-		<div class="tab-pane" id="budget">
+		<div class="tab-pane active" id="budget">
 			<h2>Budget</h2>
 			<p>
 				<label for="lodging">Lodging:</label>
@@ -106,6 +106,10 @@
 				<label for="food"><input type="radio" id="food" name="food" value="indian" /> Indian</label>
 			</form>
 		</div>
+	</div>
+</div>
+<div class="col-md-6">
+	<div id="map_canvas">
 	</div>
 </div>
 </div>

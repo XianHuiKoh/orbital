@@ -120,6 +120,81 @@ $(document).ready(function() {
 			});
 		}
 	});
+
+	// Singapore map
+	function initialize() {
+  		var myLatlng = new google.maps.LatLng(1.3400,103.8100);
+  		var mapOptions = {
+    		zoom: 11,
+    		center: myLatlng
+  		}
+  		var map = new google.maps.Map(document.getElementById('map_canvas'), mapOptions);
+
+  		// Esplanade marker
+  		var esplanadeLatlng = new google.maps.LatLng(1.2894, 103.8570);
+
+  		var esplanademarker = new google.maps.Marker({
+      		position: esplanadeLatlng,
+     		map: map,
+      		title: 'Esplanade - Theatres on the Bay'
+  		});
+
+  		// Singapore Botanic Garden marker
+  		var botanicLatlng = new google.maps.LatLng(1.3139, 103.8161);
+
+  		var botanicmarker = new google.maps.Marker({
+      		position: botanicLatlng,
+      		map: map,
+      		title: 'Singapore Botanic Garden'
+  		});
+
+  		// Gardens by the Bay marker
+  		var gardensbythebayLatlng = new google.maps.LatLng(1.2815, 103.8636);
+
+  		var gardensbythebaymarker = new google.maps.Marker({
+     		position: gardensbythebayLatlng,
+      		map: map,
+      		title: 'Gardens by the Bay'
+  		});
+
+  		// Zoo marker
+  		var zooLatlng = new google.maps.LatLng(1.4045, 103.7929);
+
+  		var zoomarker = new google.maps.Marker({
+      		position: zooLatlng,
+      		map: map,
+      		title: 'Singapore Zoo'
+  		});
+
+  		// Flyer marker
+  		var flyerLatlng = new google.maps.LatLng(1.2893, 103.8632);
+
+  		var flyermarker = new google.maps.Marker({
+      		position: flyerLatlng,
+      		map: map,
+      		title: 'Singapore Flyer'
+  		});
+
+  		// Asian Civilations Museum marker
+  		var asiancivilationsmuseumLatlng = new google.maps.LatLng(1.2874, 103.8515);
+
+  		var asiancivilationsmuseummarker = new google.maps.Marker({
+      		position: asiancivilationsmuseumLatlng,
+      		map: map,
+      		title: 'Asian Civilations Museum'
+  		});
+
+  		// Wild Wild Wet marker
+  		var wildwildwetLatlng = new google.maps.LatLng(1.3775, 103.9541);
+
+  		var wildwildwetmarker = new google.maps.Marker({
+      		position: wildwildwetLatlng,
+      		map: map,
+      		title: 'Wild Wild Wet'
+  		});    
+	}
+
+	google.maps.event.addDomListener(window, 'load', initialize);
 });
 
 
