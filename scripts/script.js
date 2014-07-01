@@ -136,7 +136,8 @@ $(document).ready(function() {
   		var esplanademarker = new google.maps.Marker({
       		position: esplanadeLatlng,
      		map: map,
-      		title: 'Esplanade - Theatres on the Bay'
+      		title: 'Esplanade - Theatres on the Bay',
+      		animation: google.maps.Animation.DROP
   		});
 
   		// Singapore Botanic Garden marker
@@ -145,7 +146,8 @@ $(document).ready(function() {
   		var botanicmarker = new google.maps.Marker({
       		position: botanicLatlng,
       		map: map,
-      		title: 'Singapore Botanic Garden'
+      		title: 'Singapore Botanic Garden',
+      		animation: google.maps.Animation.DROP
   		});
 
   		// Gardens by the Bay marker
@@ -154,7 +156,8 @@ $(document).ready(function() {
   		var gardensbythebaymarker = new google.maps.Marker({
      		position: gardensbythebayLatlng,
       		map: map,
-      		title: 'Gardens by the Bay'
+      		title: 'Gardens by the Bay',
+      		animation: google.maps.Animation.DROP
   		});
 
   		// Zoo marker
@@ -163,7 +166,8 @@ $(document).ready(function() {
   		var zoomarker = new google.maps.Marker({
       		position: zooLatlng,
       		map: map,
-      		title: 'Singapore Zoo'
+      		title: 'Singapore Zoo',
+      		animation: google.maps.Animation.DROP
   		});
 
   		// Flyer marker
@@ -172,7 +176,8 @@ $(document).ready(function() {
   		var flyermarker = new google.maps.Marker({
       		position: flyerLatlng,
       		map: map,
-      		title: 'Singapore Flyer'
+      		title: 'Singapore Flyer',
+      		animation: google.maps.Animation.DROP
   		});
 
   		// Asian Civilations Museum marker
@@ -181,7 +186,8 @@ $(document).ready(function() {
   		var asiancivilationsmuseummarker = new google.maps.Marker({
       		position: asiancivilationsmuseumLatlng,
       		map: map,
-      		title: 'Asian Civilations Museum'
+      		title: 'Asian Civilations Museum',
+      		animation: google.maps.Animation.DROP
   		});
 
   		// Wild Wild Wet marker
@@ -190,12 +196,19 @@ $(document).ready(function() {
   		var wildwildwetmarker = new google.maps.Marker({
       		position: wildwildwetLatlng,
       		map: map,
-      		title: 'Wild Wild Wet'
-  		});    
-	}
+      		title: 'Wild Wild Wet',
+      		animation: google.maps.Animation.DROP
+  		});
 
+  		// Helix Bridge marker
+  		var helixbridgeLatlng = new google.maps.LatLng(1.2873, 103.8605);
+
+  		var helixbridgemarker = new google.maps.Marker({
+      		position: helixbridgeLatlng,
+      		map: map,
+      		title: 'The Helix Bridge',
+      		animation: google.maps.Animation.DROP
+  		});
+	}
 	google.maps.event.addDomListener(window, 'load', initialize);
 });
-
-
-
