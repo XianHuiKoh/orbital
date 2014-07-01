@@ -62,7 +62,7 @@ $(document).ready(function() {
 			
 			// Update Total Budget accordingly
 			$( '#total-budget' ).html(	ui.value +
-														$('#slider-food').slider('value') +
+														$('#slider-fb').slider('value') +
 														$('#slider-shopping').slider('value') +
 														$('#slider-misc').slider('value') );
 		}
@@ -70,7 +70,7 @@ $(document).ready(function() {
 
 	$( "#lodging" ).val( "$" + $( "#slider-lodging" ).slider( "value" ) );
 
-	$("#slider-food").slider({
+	$("#slider-fb").slider({
 		range: "min",
 		value: 10,
 		min: 1,
@@ -86,7 +86,7 @@ $(document).ready(function() {
 		}
 	});
 
-	$( "#fb" ).val( "$" + $( "#slider-food" ).slider( "value" ) );
+	$( "#fb" ).val( "$" + $( "#slider-fb" ).slider( "value" ) );
 
 	$("#slider-shopping").slider({
 		range: "min",
@@ -99,7 +99,7 @@ $(document).ready(function() {
 			// Update Total Budget accordingly
 			$( '#total-budget' ).html(	ui.value +
 														$('#slider-lodging').slider('value') +
-														$('#slider-food').slider('value') +
+														$('#slider-fb').slider('value') +
 														$('#slider-misc').slider('value') );
 
 		}
@@ -113,13 +113,13 @@ $(document).ready(function() {
 		min: 1,
 		max: 10000,
 		slide: function( event, ui ) {
-			$( "#miscellaneous" ).val( "$" + ui.value );
+			$( "#misc" ).val( "$" + ui.value );
 
 			// Update Total Budget accordingly
 			$( '#total-budget' ).html(	ui.value +
 														$('#slider-lodging').slider('value') +
 														$('#slider-shopping').slider('value') +
-														$('#slider-food').slider('value') );
+														$('#slider-fb').slider('value') );
 
 		}
 	});
@@ -127,9 +127,15 @@ $(document).ready(function() {
 	$( "#miscellaneous" ).val( "$" + $( "#slider-misc" ).slider( "value" ) );
 
 	$( '#total-budget' ).html(	$('#slider-lodging').slider('value') +
-														$('#slider-food').slider('value') +
+														$('#slider-fb').slider('value') +
 														$('#slider-shopping').slider('value') +
 														$('#slider-misc').slider('value') );
+	
+	// If slider input is changed, update the corresponding slider
+	$('.slider-val').change(function () {
+		var value = this.value.substring(1);
+		$('#slider-' + $(this).attr('id')).slider('value', parseInt(value));
+	});
 
 	// Selects the desired pace
 	$( "#selectable_pace" ).selectable({
