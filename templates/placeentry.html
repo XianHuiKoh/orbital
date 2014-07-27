@@ -1,70 +1,168 @@
 <!-- Places Entry -->
 <!DOCTYPE HTML>
 <html>
-<head>
-    <title> Planner</title>
-    <link href="../bootstrap/css/bootstrap.css" rel="stylesheet">
-</head>
-<body>
-<div class="container">
+	<head>
+		<title> Planner</title>
+		<link href="../bootstrap/css/bootstrap.css" rel="stylesheet">
+	</head>
+	<body>
+		<div class="container">
 
-	<form class="form-horizontal" action='/placeentry' method='post'>
-		<div class="form-group">
-			<label class="control-label col-xs-2" for="inputName">Name</label>
-			<div class="col-xs-10"><input id="inputName" class="form-control" type="text" name="name"></div>
-		</div>
+			<div class="text-center"><h2> Place Entry </h2></div>
 
-		<div class="form-group">
-			<label class="control-label col-xs-2" for="inputImage">Image url</label>
-			<div class="col-xs-10"><input id="inputImage" class="form-control" type="url" name="image"></div>
-		</div>
+			<form class="form-horizontal" action='/placeentry' method='post'>
+				<div class="form-group">
+					<label class="control-label col-xs-2" for="inputName">Name</label>
+					<div class="col-xs-10"><input id="inputName" class="form-control" type="text" name="name"></div>
+				</div>
 
-		<div class="form-group">
-			<label class="control-label col-xs-2" for="inputRating">Rating</label>
-			<div class="col-xs-10">
-			<div class="input-group">
-				<input id="inputRating" class="form-control" type="number" min="0" max="10" name="rating">
-				<span class="input-group-addon">/10</span>
-			</div>
-		</div>
-		</div>
+				<div class="form-group">
+					<label class="control-label col-xs-2" for="inputDesc">Description</label>
+					<div class="col-xs-10"><textarea class="form-control" rows="4" name="desc"></textarea></div>
+				</div>
 
-		<div class="form-group">
-			<label class="control-label col-xs-2" for="inputDesc">Description</label>
-			<div class="col-xs-10"><textarea class="form-control" rows="4" name="desc"></textarea></div>
-		</div>
-		<div class="text-center"><button class="btn btn-primary btn-large" type="submit">Submit</button></div>
-	</form>
+				<div class="form-group">
+					<label class="control-label col-xs-2" for="inputPop">Popularity</label>
+					<div class="col-xs-10"><input id="inputPop" class="form-control" type="text" name="popularity"></div>
+				</div>
 
-	<div class="text-center"><h2> Places List </h2></div>
-		<table class="table table-bordered table-striped">
-			<thead>
-        <tr>
-            <th>Name</th>
-            <th width="50%">Description</th>
+				<div class="form-group">
+					<label class="control-label col-xs-2" for="inputImage">Image</label>
+					<div class="col-xs-10"><input id="inputImage" class="form-control" type="text" name="image"></div>
+				</div>
+
+				<div class="form-group">
+					<label class="control-label col-xs-2">Location Type</label>
+					<div class="col-xs-10">
+						<label class="radio-inline">
+							<input id="inlineRadio1" type="radio" name="loc_type" value="outdoor">Outdoor
+						</label>
+						<label class="radio-inline">
+							<input id="inlineRadio2" type="radio" name="loc_type" value="indoor">Indoor
+						</label>
+						<label class="radio-inline">
+							<input id="inlineRadio3" type="radio" name="loc_type" value="both">Both
+						</label>
+					</div>					
+				</div>
+
+				<div class="form-group">
+					<label class="control-label col-xs-2" for="inputDuration">Duration</label>
+					<div class="col-xs-2"><input id="inputDuration" class="form-control" type="text" name="duration"></div>
+
+					<label class="control-label col-xs-2" for="inputOpening">Opening</label>
+					<div class="col-xs-2"><input id="inputOpening" class="form-control" type="text" name="opening"></div>
+
+					<label class="control-label col-xs-2" for="inputClosing">Closing</label>
+					<div class="col-xs-2"><input id="inputClosing" class="form-control" type="text" name="closing"></div>
+				</div>
+
+				<hr>
+
+				<div class="form-group">
+					<label class="control-label col-xs-2" for="inputNature">Nature</label>
+					<div class="col-xs-4"><input id="inputNature" class="form-control" type="number" name="nature"></div>
+
+					<label class="control-label col-xs-2" for="inputShopping">Shopping</label>
+					<div class="col-xs-4"><input id="inputShopping" class="form-control" type="number" name="shopping"></div>
+				</div>
+
+				<div class="form-group">
+					<label class="control-label col-xs-2" for="inputCulture">Culture</label>
+					<div class="col-xs-4"><input id="inputCulture" class="form-control" type="number" name="culture"></div>
+
+					<label class="control-label col-xs-2" for="inputFamily">Family</label>
+					<div class="col-xs-4"><input id="inputFamily" class="form-control" type="number" name="family"></div>
+				</div>
+
+				<div class="form-group">
+					<label class="control-label col-xs-2" for="inputRomance">Romance</label>
+					<div class="col-xs-4"><input id="inputRomance" class="form-control" type="number" name="romance"></div>
+
+					<label class="control-label col-xs-2" for="inputFood">Food</label>
+					<div class="col-xs-4"><input id="inputFood" class="form-control" type="number" name="food"></div>
+				</div>
+
+				<hr>
+
+				<div class="form-group">
+					<label class="control-label col-xs-2" for="inputNight">Night</label>
+					<div class="col-xs-4"><input id="inputNight" class="form-control" type="number" name="Night"></div>
+
+					<label class="control-label col-xs-2" for="inputMorning">Morning</label>
+					<div class="col-xs-4"><input id="inputMorning" class="form-control" type="number" name="Morning"></div>
+				</div>
+
+				<div class="form-group">
+					<label class="control-label col-xs-2" for="inputAfternoon">Afternoon</label>
+					<div class="col-xs-4"><input id="inputAfternoon" class="form-control" type="number" name="afternoon"></div>
+
+					<label class="control-label col-xs-2" for="inputEvening">Evening</label>
+					<div class="col-xs-4"><input id="inputEvening" class="form-control" type="number" name="evening"></div>
+				</div>
+
+				<hr>
+
+				<div class="form-group">
+					<label class="control-label col-xs-2" for="">Suitability</label>
+					<div class="col-xs-5">
+						<div class="checkbox">
+							<label for="">
+								<input type="checkbox" name="handicapped" value="true">Handicapped
+							</label>
+						</div>
+						<div class="checkbox">
+							<label for="">
+								<input type="checkbox" name="children" value="true">Children
+							</label>
+						</div>
+					</div>
+					<div class="col-xs-5">
+						<div class="checkbox">
+							<label for="">
+								<input type="checkbox" name="infants" value="true">Infants
+							</label>
+						</div>
+						<div class="checkbox">
+							<label for="">
+								<input type="checkbox" name="elderlies" value="true">Elderlies
+							</label>
+						</div>
+					</div>
+				</div>
+				<div class="text-center"><button class="btn btn-primary btn-large" type="submit">Submit</button></div>
+			</form>
+
+			<div class="text-center"><h2> Places List </h2></div>
+
+			<table class="table table-bordered table-striped">
+				<thead>
+					<tr>
+						<th>Name</th>
+						<th width="50%">Description</th>
 						<th>Rating</th>
 						<th>Image</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for place in places %}
-				<tr>
+					</tr>
+				</thead>
+				<tbody>
+					{% for place in places %}
+					<tr>
 						<td class="col-xs-2">{{ place.place_name }} </td>
 						<td class="col-xs-6">{{ place.place_desc }} </td>
 						<td class="col-xs-1">{{ place.place_rating }} </td>
 						<td class="col-xs-3">
 							{% if place.place_image.rstrip() != "" %}
-								<a href="{{ place.place_image }}" target="_blank">
-									<img class="img-responsive" src="{{ place.place_image }}">
-								</a>
+							<a href="{{ place.place_image }}" target="_blank">
+								<img class="img-responsive" src="{{ place.place_image }}">
+							</a>
 							{% else %}
-								<img class="img-responsive" src="../images/no_image.jpg" alt="No Image">
+							<img class="img-responsive" src="../images/no_image.jpg" alt="No Image">
 							{% endif %}
 						</td>
-				</tr>
-				{% endfor %}
-			</tbody>
-		</table>
-	</div>
-</body>
+					</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+	</body>
 </html>

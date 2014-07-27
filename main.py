@@ -19,6 +19,7 @@ import jinja2
 import os
 
 from google.appengine.ext import ndb
+from datamodel import *
 
 def guess_autoescape(template_name):
     if template_name is None or '.' not in template_name:
@@ -31,22 +32,23 @@ jinja_environment = jinja2.Environment(
                                     extensions=['jinja2.ext.autoescape'])
 
 
-class Places(ndb.Model):
-    # place_id = ndb.IntegerProperty()
-    place_name = ndb.StringProperty()
-    place_image = ndb.StringProperty()
-    place_desc = ndb.TextProperty()
-    place_rating = ndb.IntegerProperty()
+#class Places(ndb.Model):
+#    # place_id = ndb.IntegerProperty()
+#    place_name = ndb.StringProperty()
+#    place_image = ndb.StringProperty()
+#    place_desc = ndb.TextProperty()
+#    place_rating = ndb.IntegerProperty()
+
+DEFAULT_PARENT_KEY = ndb.Key(Place, 'Singapore') # Using this for ancestir query
 
 class PlaceEntry(webapp2.RequestHandler):
     """ Form for getting and displaying places. """
 
     def show(self):
         # Displays the page. Used by both get and post
-        places = Places.query(ancestor=ndb.Key(Places, 'Singapore')).order(-Places.place_rating, Places.place_name)
-
+        places = Place.query(ancestor=DEFAULT_PARENT_KEY).order(-Place.popularity, Place.name)
         template_values = {
-            'places': places 
+            'places': places
         }
 
         template = jinja_environment.get_template('placeentry.html')
@@ -57,13 +59,34 @@ class PlaceEntry(webapp2.RequestHandler):
 
     def post(self):
         # Retrieve Places
-        place = Places(parent=ndb.Key(Places, 'Singapore'))
+        place = Place(parent=DEFAULT_PARENT_KEY)
 
-        place.place_name = self.request.get('name')
-        place.place_image = self.request.get('image')
-        place.place_desc = self.request.get('desc')
-        place.place_rating = int(self.request.get('rating'))
+        place.name              = self.request.get('name')
+        place.desc              = self.request.get('desc')
+        place.popularity        = float(self.request.get('popularity'))
+        place.image             = self.request.get('image')
+        place.loc_type          = self.request.get('loc_type')
+        place.duration          = place.to_minute(self.request.get('duration'))
+        place.opening           = place.to_minute(self.request.get('opening'))
+        place.closing           = place.to_minute(self.request.get('closing'))
+        
+        place.nature            = float(self.request.get('nature'))
+        place.shopping          = float(self.request.get('shopping'))
+        place.culture           = float(self.request.get('culture'))
+        place.family            = float(self.request.get('family'))
+        place.romance           = float(self.request.get('romance'))
+        place.food              = float(self.request.get('food'))
+        
+        place.night             = float(self.request.get('night'))
+        place.morning           = float(self.request.get('morning'))
+        place.afternoon         = float(self.request.get('afternoon'))
+        place.evening           = float(self.request.get('evening'))
 
+        place.handicapped       = bool(self.request.get('handicapped'))
+        place.children          = bool(self.request.get('children'))
+        place.infants           = bool(self.request.get('infants'))
+        place.elderlies         = bool(self.request.get('elderlies'))
+        
         # Store the place no matter what
         place.put()
 

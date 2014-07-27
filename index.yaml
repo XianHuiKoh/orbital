@@ -10,6 +10,13 @@ indexes:
 # automatically uploaded to the admin console when you next deploy
 # your application using appcfg.py.
 
+- kind: Place
+  ancestor: yes
+  properties:
+  - name: popularity
+    direction: desc
+  - name: name
+
 - kind: Places
   properties:
   - name: place_rating
