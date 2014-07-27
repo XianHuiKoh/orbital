@@ -63,6 +63,8 @@ class PlaceEntry(webapp2.RequestHandler):
 
         place.name              = self.request.get('name')
         place.desc              = self.request.get('desc')
+        place.address           = self.request.get('address')
+        place.postal            = self.request.get('postal')
         place.popularity        = float(self.request.get('popularity'))
         place.image             = self.request.get('image')
         place.loc_type          = self.request.get('loc_type')

@@ -20,7 +20,15 @@
 					<label class="control-label col-xs-2" for="inputDesc">Description</label>
 					<div class="col-xs-10"><textarea class="form-control" rows="4" name="desc"></textarea></div>
 				</div>
-
+				
+				<div class="form-group">
+					<label class="control-label col-xs-2" for="inputAddress">Address</label>
+					<div class="col-xs-6"><input id="inputAddress" class="form-control" type="text" name="address"></div>
+					
+					<label class="control-label col-xs-2" for="inputPostal">Postal Code</label>
+					<div class="col-xs-2"><input id="inputPostal" class="form-control" type="text" name="postal"></div>
+				</div>
+				
 				<div class="form-group">
 					<label class="control-label col-xs-2" for="inputPop">Popularity</label>
 					<div class="col-xs-10"><input id="inputPop" class="form-control" type="number" name="popularity"></div>
@@ -161,6 +169,7 @@
 					<tr>
 						<th>Name</th>
 						<th>Desc</th>
+						<th>Address</th>
 						<th>Popularity</th>
 						<th>Image</th>
 						<th>LocType</th>
@@ -175,7 +184,8 @@
 					{% for place in places %}
 					<tr>
 						<td class="col-xs-1">{{ place.name }} </td>
-						<td class="col-xs-1">{{ place.desc }} </td>
+						<td class="col-xs-4">{{ place.desc }} </td>
+						<td class="col-xs-1">{{ place.address }},({{ place.postal }})</td>
 						<td class="col-xs-1">{{ place.popularity }} </td>
 						<td class="col-xs-1">{{ place.image }} </td>
 						<td class="col-xs-1">{{ place.loc_type }} </td>

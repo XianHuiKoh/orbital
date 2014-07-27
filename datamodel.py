@@ -5,6 +5,8 @@ class Place(ndb.Model):
     Attributes:
         name(String):       Name of place.
         desc(Text):         A brief text description of the place.
+        address(String):    Address of the place
+        postal(String):     Postal code of the place. 6-digit number
         popularity(Float):  A score of how popular the place is. Used in calculation of preference scored.
         image(String):      Name of image stored in static folder /images
         loc_type(String):   Property of a place. Either 'Outdoor', 'Indoor', or 'Both'.
@@ -34,6 +36,8 @@ class Place(ndb.Model):
     """
     name            = ndb.StringProperty()
     desc            = ndb.TextProperty()
+    address         = ndb.StringProperty()
+    postal          = ndb.StringProperty()
     popularity      = ndb.FloatProperty()
     image           = ndb.StringProperty()
     loc_type        = ndb.StringProperty()
