@@ -57,3 +57,14 @@ class Place(ndb.Model):
     children        = ndb.BooleanProperty()
     infants         = ndb.BooleanProperty()
     elderlies       = ndb.BooleanProperty()
+
+    def to_minute(self, time):
+        if time:
+            hour, minute = (int(d) for d in time.split(':'))
+            # Data check
+            if hour in xrange(24) and minute in xrange(60):
+                return hour * 60 + minute
+            else:
+                print 'Warning: invalid format for time'
+        else:
+            return 0

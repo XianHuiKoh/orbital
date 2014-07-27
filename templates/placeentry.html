@@ -23,7 +23,7 @@
 
 				<div class="form-group">
 					<label class="control-label col-xs-2" for="inputPop">Popularity</label>
-					<div class="col-xs-10"><input id="inputPop" class="form-control" type="text" name="popularity"></div>
+					<div class="col-xs-10"><input id="inputPop" class="form-control" type="number" name="popularity"></div>
 				</div>
 
 				<div class="form-group">
@@ -48,57 +48,76 @@
 
 				<div class="form-group">
 					<label class="control-label col-xs-2" for="inputDuration">Duration</label>
-					<div class="col-xs-2"><input id="inputDuration" class="form-control" type="text" name="duration"></div>
+					<div class="col-xs-2">
+						<input id="inputDuration" class="form-control" type="text" name="duration" placeholder="00:00">
+					</div>
 
 					<label class="control-label col-xs-2" for="inputOpening">Opening</label>
-					<div class="col-xs-2"><input id="inputOpening" class="form-control" type="text" name="opening"></div>
+					<div class="col-xs-2">
+						<input id="inputOpening" class="form-control" type="text" name="opening" placeholder="00:00">
+					</div>
 
 					<label class="control-label col-xs-2" for="inputClosing">Closing</label>
-					<div class="col-xs-2"><input id="inputClosing" class="form-control" type="text" name="closing"></div>
+					<div class="col-xs-2">
+						<input id="inputClosing" class="form-control" type="text" name="closing" placeholder="00:00">
+					</div>
+					<div class="col-xs-2"></div>
+					<span class="col-xs-10 help-block">Please enter according to format hh:mm (24-hour fomart). Range: 00:00 to 23:59.<br>For example: 03:30 for 3 hours and 30 minutes or 3 thirty in the morning.</span>
 				</div>
 
 				<hr>
 
 				<div class="form-group">
+					<div class="col-xs-2"></div>
+					<div class="col-xs-10 text-center">
+						<h3><strong>Preference Scores</strong></h3>
+						<span class="help-block" id="helpPref">Fractional number. All preference scores add up to 1.0</span>
+					</div>
+
 					<label class="control-label col-xs-2" for="inputNature">Nature</label>
-					<div class="col-xs-4"><input id="inputNature" class="form-control" type="number" name="nature"></div>
+					<div class="col-xs-4"><input id="inputNature" class="form-control" type="number" name="nature" step="any"></div>
 
 					<label class="control-label col-xs-2" for="inputShopping">Shopping</label>
-					<div class="col-xs-4"><input id="inputShopping" class="form-control" type="number" name="shopping"></div>
+					<div class="col-xs-4"><input id="inputShopping" class="form-control" type="number" name="shopping" step="any"></div>
 				</div>
 
 				<div class="form-group">
 					<label class="control-label col-xs-2" for="inputCulture">Culture</label>
-					<div class="col-xs-4"><input id="inputCulture" class="form-control" type="number" name="culture"></div>
+					<div class="col-xs-4"><input id="inputCulture" class="form-control" type="number" name="culture" step="any"></div>
 
 					<label class="control-label col-xs-2" for="inputFamily">Family</label>
-					<div class="col-xs-4"><input id="inputFamily" class="form-control" type="number" name="family"></div>
+					<div class="col-xs-4"><input id="inputFamily" class="form-control" type="number" name="family" step="any"></div>
 				</div>
 
 				<div class="form-group">
 					<label class="control-label col-xs-2" for="inputRomance">Romance</label>
-					<div class="col-xs-4"><input id="inputRomance" class="form-control" type="number" name="romance"></div>
+					<div class="col-xs-4"><input id="inputRomance" class="form-control" type="number" name="romance" step="any"></div>
 
 					<label class="control-label col-xs-2" for="inputFood">Food</label>
-					<div class="col-xs-4"><input id="inputFood" class="form-control" type="number" name="food"></div>
+					<div class="col-xs-4"><input id="inputFood" class="form-control" type="number" name="food" step="any"></div>
 				</div>
 
 				<hr>
 
 				<div class="form-group">
+					<div class="col-xs-2"></div>
+					<div class="col-xs-10 text-center">
+						<h3><strong>Time Scores</strong></h3>
+						<span class="help-block">Fractinal number. All time scores add up to 1.0</span>
+					</div>
 					<label class="control-label col-xs-2" for="inputNight">Night</label>
-					<div class="col-xs-4"><input id="inputNight" class="form-control" type="number" name="Night"></div>
+					<div class="col-xs-4"><input id="inputNight" class="form-control" type="number" name="night" step="any"></div>
 
 					<label class="control-label col-xs-2" for="inputMorning">Morning</label>
-					<div class="col-xs-4"><input id="inputMorning" class="form-control" type="number" name="Morning"></div>
+					<div class="col-xs-4"><input id="inputMorning" class="form-control" type="number" name="morning" step="any"></div>
 				</div>
 
 				<div class="form-group">
 					<label class="control-label col-xs-2" for="inputAfternoon">Afternoon</label>
-					<div class="col-xs-4"><input id="inputAfternoon" class="form-control" type="number" name="afternoon"></div>
+					<div class="col-xs-4"><input id="inputAfternoon" class="form-control" type="number" name="afternoon" step="any"></div>
 
 					<label class="control-label col-xs-2" for="inputEvening">Evening</label>
-					<div class="col-xs-4"><input id="inputEvening" class="form-control" type="number" name="evening"></div>
+					<div class="col-xs-4"><input id="inputEvening" class="form-control" type="number" name="evening" step="any"></div>
 				</div>
 
 				<hr>
@@ -133,31 +152,43 @@
 				<div class="text-center"><button class="btn btn-primary btn-large" type="submit">Submit</button></div>
 			</form>
 
+			<!-- Displaying entered data -->
+			<hr>
 			<div class="text-center"><h2> Places List </h2></div>
 
 			<table class="table table-bordered table-striped">
 				<thead>
 					<tr>
 						<th>Name</th>
-						<th width="50%">Description</th>
-						<th>Rating</th>
+						<th>Desc</th>
+						<th>Popularity</th>
 						<th>Image</th>
+						<th>LocType</th>
+						<th>Duration</th>
+						<th>Operating</th>
+						<th>Preference</th>
+						<th>Time</th>
+						<th>Suitability</th>
 					</tr>
 				</thead>
 				<tbody>
 					{% for place in places %}
 					<tr>
-						<td class="col-xs-2">{{ place.place_name }} </td>
-						<td class="col-xs-6">{{ place.place_desc }} </td>
-						<td class="col-xs-1">{{ place.place_rating }} </td>
-						<td class="col-xs-3">
-							{% if place.place_image.rstrip() != "" %}
-							<a href="{{ place.place_image }}" target="_blank">
-								<img class="img-responsive" src="{{ place.place_image }}">
-							</a>
-							{% else %}
-							<img class="img-responsive" src="../images/no_image.jpg" alt="No Image">
-							{% endif %}
+						<td class="col-xs-1">{{ place.name }} </td>
+						<td class="col-xs-1">{{ place.desc }} </td>
+						<td class="col-xs-1">{{ place.popularity }} </td>
+						<td class="col-xs-1">{{ place.image }} </td>
+						<td class="col-xs-1">{{ place.loc_type }} </td>
+						<td class="col-xs-1">{{ place.duration }} </td>
+						<td class="col-xs-1">{{ place.opening }} - {{ place.closing }}</td>
+						<td class="col-xs-2">
+							{{place.nature}},{{place.shopping}},{{place.culture}},{{place.family}},{{place.romance}},{{place.food}}
+						</td>
+						<td class="col-xs-2">
+							{{place.night}},{{place.morning}},{{place.afternoon}},{{place.evening}}
+						</td>
+						<td class="col-xs-1">
+							{{place.handicapped}},{{place.children}},{{place.infants}},{{place.elderlies}}
 						</td>
 					</tr>
 					{% endfor %}

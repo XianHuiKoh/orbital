@@ -90,13 +90,13 @@ class PlaceEntry(webapp2.RequestHandler):
         # Store the place no matter what
         place.put()
 
-        self.show()
+        self.redirect('/placeentry')
 
 class DeletePlace(webapp2.RequestHandler):
     # Delete a place specified by user
 
     def post(self):
-        place = ndb.Key('Places', self.request.get('id'))
+        place = ndb.Key('Place', self.request.get('id'))
         place.delete()
         self.redirect('/placeentry')
 
