@@ -1,9 +1,27 @@
 import logging
+<<<<<<< HEAD
+from functools import wraps
+=======
+>>>>>>> 70052a47802abcdfda6273c298eab330aae4257d
 from datamodel import *
 from google.appengine.ext import ndb
 
 DEFAULT_PARENT_KEY = ndb.Key(Place, 'Singapore') # Using this for place ancestor query
 
+<<<<<<< HEAD
+def memoized(func):
+    """Memoized function wrapper. Using dictionary as cache
+    """
+    cache = {}
+    @wraps(func)
+    def wrap_func(*args):
+        if args not in cache:
+            cache[args] = func(*args)
+        return cache[args]
+    return wrap_func
+
+=======
+>>>>>>> 70052a47802abcdfda6273c298eab330aae4257d
 def gain(place, time=0, pref='culture'):
     """calculate_gain(place, pref) -> gain including preference, time of visit, suitability
     place(Place): the place of attraction
@@ -51,3 +69,11 @@ def gain(place, time=0, pref='culture'):
 
     return total_gain
 
+<<<<<<< HEAD
+@memoized
+def distance(fr, to):
+    if fr.id == to.id:
+        return 0
+
+=======
+>>>>>>> 70052a47802abcdfda6273c298eab330aae4257d
