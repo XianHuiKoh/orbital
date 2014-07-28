@@ -17,6 +17,7 @@
 import webapp2
 import jinja2
 import os
+import logging
 
 from google.appengine.ext import ndb
 from datamodel import *
@@ -32,14 +33,7 @@ jinja_environment = jinja2.Environment(
                                     extensions=['jinja2.ext.autoescape'])
 
 
-#class Places(ndb.Model):
-#    # place_id = ndb.IntegerProperty()
-#    place_name = ndb.StringProperty()
-#    place_image = ndb.StringProperty()
-#    place_desc = ndb.TextProperty()
-#    place_rating = ndb.IntegerProperty()
-
-DEFAULT_PARENT_KEY = ndb.Key(Place, 'Singapore') # Using this for ancestir query
+DEFAULT_PARENT_KEY = ndb.Key(Place, 'Singapore') # Using this for ancestor query
 
 class PlaceEntry(webapp2.RequestHandler):
     """ Form for getting and displaying places. """
@@ -61,16 +55,15 @@ class PlaceEntry(webapp2.RequestHandler):
         # Retrieve Places
         place = Place(parent=DEFAULT_PARENT_KEY)
 
-        place.name              = self.request.get('name')
-        place.desc              = self.request.get('desc')
-        place.address           = self.request.get('address')
-        place.postal            = self.request.get('postal')
+        place.desc              = self.request.get('desc').rstrip()
+        place.address           = self.request.get('address').rstrip()
+        place.postal            = self.request.get('postal').rstrip()
         place.popularity        = float(self.request.get('popularity'))
-        place.image             = self.request.get('image')
-        place.loc_type          = self.request.get('loc_type')
-        place.duration          = place.to_minute(self.request.get('duration'))
-        place.opening           = place.to_minute(self.request.get('opening'))
-        place.closing           = place.to_minute(self.request.get('closing'))
+        place.image             = self.request.get('image').rstrip()
+        place.loc_type          = self.request.get('loc_type').rstrip()
+        place.duration          = place.to_minute(self.request.get('duration').rstrip())
+        place.opening           = place.to_minute(self.request.get('opening').rstrip())
+        place.closing           = place.to_minute(self.request.get('closing').rstrip())
         
         place.nature            = float(self.request.get('nature'))
         place.shopping          = float(self.request.get('shopping'))
