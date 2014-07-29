@@ -18,6 +18,7 @@ import webapp2
 import jinja2
 import os
 import logging
+import settings
 
 from google.appengine.ext import ndb
 from datamodel import *
@@ -41,6 +42,10 @@ class PlaceEntry(webapp2.RequestHandler):
     def show(self):
         # Displays the page. Used by both get and post
         places = Place.query(ancestor=DEFAULT_PARENT_KEY).order(-Place.popularity, Place.name)
+        
+        places_dict = {place.key.id(): place for place in Place.query(ancestor=settings.DEFAULT_PARENT_KEY)}
+
+        
         template_values = {
             'places': places
         }
@@ -61,9 +66,9 @@ class PlaceEntry(webapp2.RequestHandler):
         place.popularity        = float(self.request.get('popularity'))
         place.image             = self.request.get('image').rstrip()
         place.loc_type          = self.request.get('loc_type').rstrip()
-        place.duration          = place.to_minute(self.request.get('duration').rstrip())
-        place.opening           = place.to_minute(self.request.get('opening').rstrip())
-        place.closing           = place.to_minute(self.request.get('closing').rstrip())
+        place.duration          = self.request.get('duration').rstrip()
+        place.opening           = self.request.get('opening').rstrip()
+        place.closing           = self.request.get('closing').rstrip()
         
         place.nature            = float(self.request.get('nature'))
         place.shopping          = float(self.request.get('shopping'))
@@ -106,6 +111,24 @@ class Planner(webapp2.RequestHandler):
         template = jinja_environment.get_template("planner.html")
         template_values = {}
         self.response.write(template.render(template_values))
+
+    def post(self):
+        """Do calculation of the trip. And pass the results as a complete 
+        list to template_values()
+
+        Then display the results accordingly.
+        """
+        template = jinja_environment.get_template("yourtrip.html")
+        
+        # Taking parameter from the form
+
+        # Magic happens here. Then the magic will pass the complete list of
+        # the initerary along as template_values for displaying.
+        
+        #initerary = find_route()
+        
+        template_values = {}
+
 
 app = webapp2.WSGIApplication([
         ('/', MainHandler),
