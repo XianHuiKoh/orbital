@@ -83,4 +83,5 @@ class Hotel(ndb.Model):
     postal          = ndb.StringProperty()
     
     image           = ndb.StringProperty()
+    duration        = ndb.StringProperty()
 
