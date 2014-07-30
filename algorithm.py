@@ -4,24 +4,11 @@ import math
 import urllib
 
 from datetime import datetime, timedelta, date, time
-from functools import wraps
 from datamodel import *
 from google.appengine.ext import ndb
 from google.appengine.api import urlfetch
 
 # DEFAULT_PARENT_KEY = ndb.Key(Place, 'Singapore') # Using this for place ancestor query
-
-def memoized(func):
-    """Memoized function wrapper. Using dictionary as cache
-    """
-    cache = {}
-    @wraps(func)
-    def wrap_func(*args):
-        if args not in cache:
-            cache[args] = func(*args)
-        return cache[args]
-    return wrap_func
-
 def gain(place, dt, pref='culture'):
     """calculate_gain(place, pref) -> gain including preference, time of visit, suitability
     place(Place)            : the place of attraction
@@ -66,6 +53,13 @@ def gain(place, dt, pref='culture'):
     logging.info('Total gain is: %.2f' % total_gain)
 
     return total_gain
+
+def process(place, pace='moderate'):
+    """Return timedelta object"""
+    d = str_to_td(place.duration)
+    (slow, moderate, fast, hectic) = (1.5, 1.0, 0.75, 0.5)
+    d = timedelta(seconds=d.total_seconds() * locals()[pace])
+    return d
 
 def find_route(fr, to, depart_time, postal=False):
     """find_route(fr, to, depart_time, postal=False) -- Return the json object of the found route
@@ -181,8 +175,10 @@ def generate_trip(start_dt, end_dt, hotel, pref='culture', pace='moderate'):
     hotel(Hotel):   hotel object serves as the starting point. And end point after 19:00
     """
     # Initialise places_dict
+    # Add id = 0 for hotel
     places_dict = {place.key.id(): place for place in Place.query(ancestor=settings.DEFAULT_PARENT_KEY)}
-    
+    places_dict[0] = hotel
+
     # Initialise some constants
     tour_num = num_of_tour(start_dt, end_dt)
     if tour_num == 0: return []
@@ -198,7 +194,6 @@ def generate_trip(start_dt, end_dt, hotel, pref='culture', pace='moderate'):
     trip_visited = set()
     # Lists of a pair of places id and the number of places before evening cutoff 
     trip = [[] for i in xrange(tour_num)] 
-    trip_route = [[] for i in xrange(tour_num)]
 
     # If start_dt is too late. Start tour on the next date.
     tour_start_dt = too_late(start_dt) and start_dt + timedelta(days=1) or start_dt 
@@ -223,7 +218,7 @@ def generate_trip(start_dt, end_dt, hotel, pref='culture', pace='moderate'):
         # trip_visited contains places that are already visited during the whole trip
         # Special id=0 to represent hotel
         L[0][0][0] = (tour_start_dt, 0, trip_visited) # (start_dt, profit, visited place to exclude)
-        P[0][0][0] = (None, None, None) # (id of previous place, column, route)
+        P[0][0][0] = (None, None) # (id of previous place, column)
         
         i = 0
         cutoff_num = None
@@ -239,7 +234,7 @@ def generate_trip(start_dt, end_dt, hotel, pref='culture', pace='moderate'):
                             u = places_dict[u_id]
                             
                             # Depart time in UNIX time
-                            depart_dt = dt +  str_to_td(v.duration)
+                            depart_dt = dt + process(v, pace)  
                             route = find_route(v, u, dt_to_epoch(depart_dt))
                             duration_td = dur(route)
 
@@ -266,12 +261,12 @@ def generate_trip(start_dt, end_dt, hotel, pref='culture', pace='moderate'):
                                         new_visited = visited.copy()
                                         new_visited.add(u_id)
                                         L[i+1][gain_idx][u_id] = (dt_, p_, new_visited)
-                                        P[i+1][gain_idx][u_id] = (v_id, j, route)
+                                        P[i+1][gain_idx][u_id] = (v_id, j)
                                 else:
                                     new_visited = visited.copy()
                                     new_visited.add(u_id)
                                     L[i+1][gain_idx][u_id] = (dt_, p_, new_visited)
-                                    P[i+1][gain_idx][u_id] = (v_id, j, route)
+                                    P[i+1][gain_idx][u_id] = (v_id, j)
             i += 1
         #--- End of while loop ---
         
@@ -280,19 +275,20 @@ def generate_trip(start_dt, end_dt, hotel, pref='culture', pace='moderate'):
         col = next(c for c in xrange(S, -1, -1) if L[row][c])
         last_cell = L[row][col]
         v_id = min(last_cell, key=last_cell.get) # Place id of the last cell
-        route = last_cell[v_id][-1] # Route of the last cell
+        dt = last_cell[v_id][0] # dt of the last place
 
         while v_id is not None:
-            trip[n].append(places_dict(v_id))
-            trip_tour[n].append(route)
+            trip[n].append((places_dict(v_id), dt_to_epoch(dt) * 1000))
             trip_visited.add(v_id)
-            v_id, col, route = P[row][col][v_id]
+            v_id, col = P[row][col][v_id]
+            dt = L[row][col][v_id]
             row -= 1
 
         # Make a tuple with cutoff
         trip[n] = (trip[n], cutoff)
     # End of for loop
     # Do stuff here to generate back the trip or simply pass trip to jinja2 to generate.
+    return trip
 
 
 
