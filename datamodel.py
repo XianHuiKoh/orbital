@@ -84,4 +84,14 @@ class Hotel(ndb.Model):
     
     image           = ndb.StringProperty()
     duration        = ndb.StringProperty()
+    opening         = ndb.StringProperty()
+    closing         = ndb.StringProperty()
+
+class Distance(ndb.Model):
+    """Model to store distance (in seconds) (through TRANSIT)"""
+    from_id         = ndb.IntegerProperty()
+    to_id           = ndb.IntegerProperty()
+
+    duration_value  = ndb.IntegerProperty()
+    duration_text   = ndb.StringProperty()
 

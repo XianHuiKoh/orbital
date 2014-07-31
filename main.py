@@ -21,7 +21,9 @@ import logging
 import settings
 
 from google.appengine.ext import ndb
+from datetime import datetime, date, time, timedelta
 from datamodel import *
+from algorithm import generate_trip
 
 def guess_autoescape(template_name):
     if template_name is None or '.' not in template_name:
@@ -60,9 +62,10 @@ class PlaceEntry(webapp2.RequestHandler):
         # Retrieve Places
         place = Place(parent=DEFAULT_PARENT_KEY)
 
+        place.name              = self.request.get('name').rstrip()
         place.desc              = self.request.get('desc').rstrip()
         place.address           = self.request.get('address').rstrip()
-        place.postal            = self.request.get('postal').rstrip()
+        place.postal            = 'Singapore ' + self.request.get('postal').rstrip()
         place.popularity        = float(self.request.get('popularity'))
         place.image             = self.request.get('image').rstrip()
         place.loc_type          = self.request.get('loc_type').rstrip()
@@ -92,14 +95,6 @@ class PlaceEntry(webapp2.RequestHandler):
 
         self.redirect('/placeentry')
 
-class DeletePlace(webapp2.RequestHandler):
-    # Delete a place specified by user
-
-    def post(self):
-        place = ndb.Key('Place', self.request.get('id'))
-        place.delete()
-        self.redirect('/placeentry')
-
 class MainHandler(webapp2.RequestHandler):
     def get(self):
         template = jinja_environment.get_template("home.html")
@@ -121,18 +116,59 @@ class Planner(webapp2.RequestHandler):
         template = jinja_environment.get_template("yourtrip.html")
         
         # Taking parameter from the form
+        start_datetime      = self.request.get('start_datetime')
+        end_datetime        = self.request.get('end_datetime')
+        hotel               = self.request.get('hotel_option')
+        preference          = self.request.get('preference_input')
+        pace                = self.request.get('pace_input')
+        misc_pref           = self.request.get('misc_input')
+        
+        logging.info(start_datetime)
+        logging.info(end_datetime)
+        logging.info(hotel)
+        logging.info(preference)
+        logging.info(pace)
+        logging.info(misc_pref)
+        # Process parameter from form
+        start_datetime = datetime.strptime(start_datetime, '%d/%m/%Y %I:%M %p')
+        end_datetime = datetime.strptime(end_datetime, '%d/%m/%Y %I:%M %p')
+        # TODO: Implement hotel option and reflect choice here
+        hotel = Hotel(name="The Forest by Wangz",
+                      desc="Very nice hotel owned by Wangz, I guess",
+                      address="145A Moulmein Rd, Singapore 308108",
+                      postal="Singapore 308108",
+                      image="",
+                      duration="00:00",
+                      opening="00:00",
+                      closing="23:59")
+        # Store the place
+        hotel.put()
 
+        logging.info('Putting hotel')
+        logging.info(hotel)
         # Magic happens here. Then the magic will pass the complete list of
         # the initerary along as template_values for displaying.
         
-        #initerary = find_route()
-        
-        template_values = {}
+        trip = generate_trip(start_datetime, end_datetime, hotel, preference, pace)
 
+        #initerary = find_route()
+        template_values = {
+            'trip': trip            
+        }
+        self.response.write(template.render(template_values))
+
+class YourTrip(webapp2.RequestHandler):
+    def get(self):
+        template = jinja_environment.get_template("yourtrip.html")
+        template_values = {}
+        self.response.write(template.render(template_values))
+
+    def post(self):
+        self.redirect('/planner')
 
 app = webapp2.WSGIApplication([
         ('/', MainHandler),
         ('/planner', Planner),
         ('/placeentry', PlaceEntry),
-        ('/deleteplace', DeletePlace)
+        ('/yourtrip', YourTrip)
 ], debug=True)

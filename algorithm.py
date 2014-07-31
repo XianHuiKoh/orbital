@@ -2,13 +2,40 @@ import logging
 import settings
 import math
 import urllib
+import json
+import time
 
-from datetime import datetime, timedelta, date, time
+import datetime
+
 from datamodel import *
+from functools import wraps
 from google.appengine.ext import ndb
 from google.appengine.api import urlfetch
 
-# DEFAULT_PARENT_KEY = ndb.Key(Place, 'Singapore') # Using this for place ancestor query
+def memoized_route(func):
+    cache = {}
+    # Read data from datastore
+    quer = Distance.query(ancestor=settings.DEFAULT_PARENT_DIST_KEY)
+    cache = {(p.from_id, p.to_id): p.duration_value for p in quer}
+    @wraps(func)
+    def wrap(fr, to, *args):
+        k = (fr.key.id(), to.key.id())
+        if k not in cache:
+            route = func(fr, to, *args)
+            duration = route['routes'][0]['legs'][0]['duration']
+            dur_val = duration['value']
+            dur_text = duration['text']
+            cache[k] = dur_val
+            # put to datastore
+            dist = Distance(from_id=fr.key.id(),
+                            to_id=to.key.id(),
+                            duration_value=dur_val,
+                            duration_text=dur_text)
+            dist.put()
+
+        return cache[k]
+    return wrap
+
 def gain(place, dt, pref='culture'):
     """calculate_gain(place, pref) -> gain including preference, time of visit, suitability
     place(Place)            : the place of attraction
@@ -34,13 +61,13 @@ def gain(place, dt, pref='culture'):
     # Time of visit calculation
     time_gain = ''
     t = dt.time()
-    if t <= time(6,0):
+    if t <= datetime.time(6,0):
         time_gain = 'night' 
-    elif t <= time(12,0):
+    elif t <= datetime.time(12,0):
         time_gain = 'morning'
-    elif t <= time(18,0): 
+    elif t <= datetime.time(18,0): 
         time_gain = 'afternoon'
-    elif t <= time(23,59):
+    elif t <= datetime.time(23,59):
         time_gain = 'evening'
 
     total_gain += (place.popularity / 10) * (1 + getattr(place, time_gain))
@@ -50,28 +77,30 @@ def gain(place, dt, pref='culture'):
         if i:
             total_gain += settings.SUITABILITY_GAIN
 
-    logging.info('Total gain is: %.2f' % total_gain)
-
     return total_gain
 
 def process(place, pace='moderate'):
     """Return timedelta object"""
     d = str_to_td(place.duration)
     (slow, moderate, fast, hectic) = (1.5, 1.0, 0.75, 0.5)
-    d = timedelta(seconds=d.total_seconds() * locals()[pace])
+    d = datetime.timedelta(seconds=d.total_seconds() * locals()[pace])
     return d
 
+@memoized_route
 def find_route(fr, to, depart_time, postal=False):
     """find_route(fr, to, depart_time, postal=False) -- Return the json object of the found route
     Since we are only using Transit and no Waypoints, there will be only 1 route and within it, only 1 leg
     Hence, we can use index [0] to access the element
     """
-    origin      = postal and ([fr.postal] or [fr.address])[0]
-    origin      = origin.encode('utf-8')
-    destination = postal and ([to.postal] or [to.address])[0]
-    destination = destination.encode('utf-8')
-
-    base_url = 'http://maps.googleapis.com/maps/api/directions/json'
+    if postal:
+        origin = fr.postal.encode('utf-8')
+        destination = to.postal.encode('utf-8')
+    else:
+        origin = fr.address.encode('utf-8')
+        destination = to.address.encode('utf-8')
+    
+    logging.info('Finding route from %s to %s' % (origin, destination))
+    base_url = 'https://maps.googleapis.com/maps/api/directions/json'
     para =  {
                 'origin'            : origin,
                 'destination'       : destination,
@@ -85,15 +114,24 @@ def find_route(fr, to, depart_time, postal=False):
     success = False
     url = base_url + '?' + urllib.urlencode(para)
 
+    dt = datetime.datetime.fromtimestamp(depart_time)
+    logging.info(dt)
+    logging.info(url)
+
+    
     while success != True and attempts < 3:
-        result = json.load(urlfetch.fetch(url))
+        result = json.load(urllib.urlopen(url))
         attempts += 1
 
         if result['status'] == 'OK':
+            logging.info('Status is OK')
             return result
+
         elif result['status'] == 'ZERO_RESULTS' and not postal:
             # Retry using postal code
+            logging.info('Status is ZERO_RESULTS, retrying with postal')
             return find_route(fr, to, depart_time, postal=True)
+
         elif result['status'] == 'OVER_QUERY_LIMIT':
             time.sleep(1)
             # Retry
@@ -104,10 +142,13 @@ def find_route(fr, to, depart_time, postal=False):
         logging.warning('Direction search limit reached')
         return None
 
-def dur(route):
+def dur(result):
     """Return timedelta object: the duration of the route, extracted from json information"""
-    secs = route['routes'][0]['legs'][0]['duration']['value']
-    return timedelta(seconds=secs)
+    if (type(result) is not int):
+        result = result['routes'][0]['legs'][0]['duration']['value']
+
+    logging.info(result)
+    return datetime.timedelta(seconds=result)
 
 # We give a 4-hour difference between the touchdown time of the user on the first day and the starting time
 # of tour.
@@ -117,12 +158,10 @@ def dur(route):
 # Tour is considered to be too early when the end time is before 10:00
 TIME_DELAY = 4 # hours
 def too_late(dt):
-    next_dt = dt + timedelta(hours=TIME_DELAY)
-    return next_dt.hour >= 22 or next_dt.hour <= 4
+    return dt.hour >= 22 or dt.hour <= 7
 
 def too_early(dt):
-    next_dt = dt - timedelta(hours=TIME_DELAY)
-    return next_dt.hour < 10
+    return dt.hour < 10
 
 def num_of_tour(start_dt, end_dt):
     num = (end_dt.date() - start_dt.date()).days + 1
@@ -134,18 +173,20 @@ def str_to_td(time_str):
     """Convert from string of format 00:00 to datetime.timedelta object"""
     if time_str:
         hour, minute = time_str.split(':')
-        delta = timedelta(hours=int(hour), minutes=int(minute))
+        delta = datetime.timedelta(hours=int(hour), minutes=int(minute))
         return delta
     else:
-        return timedelta(0)
+        return datetime.timedelta(0)
 
 def dt_to_epoch(dt):
-    """Convert from datetime.datetime object to number of seconds since epoch"""
-    return int((dt - datetime.fromtimestamp(0)).total_seconds())
+    """Convert from datetime.datetime object to number of seconds since epoch
+    Somehow I need to minus the timezone different
+    """
+    return int((dt - datetime.datetime.fromtimestamp(0) - datetime.timedelta(hours=8)).total_seconds())
 
 def time_to_td(ti):
     """Convert from datetime.time object to timedelta object"""
-    return timedelta(hours=ti.hour, minutes=ti.minute, seconds=ti.second, milliseconds=ti.milliseconds)
+    return datetime.timedelta(hours=ti.hour, minutes=ti.minute, seconds=ti.second)
 
 def gain_index(g):
     if g == 0: return 0
@@ -182,21 +223,31 @@ def generate_trip(start_dt, end_dt, hotel, pref='culture', pace='moderate'):
     # Initialise some constants
     tour_num = num_of_tour(start_dt, end_dt)
     if tour_num == 0: return []
-
     
+    # Initialise starting datetime and ending datetime according to TIME_DELAY
+    start_dt = start_dt + datetime.timedelta(hours=TIME_DELAY)
+    end_dt = end_dt - datetime.timedelta(hours=TIME_DELAY)
+
+    logging.info("Trip info:")
+    logging.info(start_dt)
+    logging.info(end_dt)
+    # Debugging
+    logging.info((dt_to_epoch(start_dt)))
+    logging.info((dt_to_epoch(end_dt)))
+
     # Number of places
     N = len(places_dict)
     # Biggest possible gain -> max column
-    max_gain = 1.10 * math.fsum(places_dict[p].popularity for p in palces_dict) \
+    max_gain = 1.10 * math.fsum(places_dict[p].popularity for p in places_dict if p != 0) \
                 + settings.SUITABILITY_GAIN * 4 * N
     S = gain_index(max_gain)
 
-    trip_visited = set()
+    trip_visited = set([0])
     # Lists of a pair of places id and the number of places before evening cutoff 
     trip = [[] for i in xrange(tour_num)] 
 
     # If start_dt is too late. Start tour on the next date.
-    tour_start_dt = too_late(start_dt) and start_dt + timedelta(days=1) or start_dt 
+    tour_start_dt = too_late(start_dt) and start_dt + datetime.timedelta(days=1) or start_dt 
     
     # Main for loop
     for n in xrange(tour_num):
@@ -205,7 +256,7 @@ def generate_trip(start_dt, end_dt, hotel, pref='culture', pace='moderate'):
         
         # Initialise tour. If tour not too late, then start with time in start_dt. Otherwise start at 
         # settings.TOUR_START_TIME(datetime.time)
-        tour_start_dt += timedelta(days=n) # If how much tour_start_dt is away from the actual start
+        tour_start_dt += datetime.timedelta(days=n) # If how much tour_start_dt is away from the actual start
         if (tour_start_dt > start_dt): # When tour starts the next day
             tour_start_dt = tour_start_dt.replace(hour=settings.TOUR_START_TIME.hour, \
                                                   minute=settings.TOUR_START_TIME.minute)
@@ -221,7 +272,7 @@ def generate_trip(start_dt, end_dt, hotel, pref='culture', pace='moderate'):
         P[0][0][0] = (None, None) # (id of previous place, column)
         
         i = 0
-        cutoff_num = None
+        cutoff = None
         cutoff_dt = base_dt + time_to_td(settings.TOUR_CUTOFF_TIME)
 
         # Loop to find a tour
@@ -234,76 +285,74 @@ def generate_trip(start_dt, end_dt, hotel, pref='culture', pace='moderate'):
                             u = places_dict[u_id]
                             
                             # Depart time in UNIX time
-                            depart_dt = dt + process(v, pace)  
-                            route = find_route(v, u, dt_to_epoch(depart_dt))
-                            duration_td = dur(route)
+                            # If depart time is too late then call it a day
+                            depart_dt = dt + process(v, pace)
+                            if not too_late(depart_dt):
+                                logging.info(u)
+                                logging.info(v)
+                                route = find_route(v, u, dt_to_epoch(depart_dt))
+                                duration_td = dur(route)
+                                
+                                dt_ = max(str_to_td(u.opening) + base_dt, depart_dt + duration_td) 
+                                logging.info(dt_)
+                                logging.info(base_dt)
+                                logging.info((str_to_td(u.closing)))
+                                logging.info((str_to_td(u.duration)))
+                                # If it is still possible to enjoy the place
+                                if dt_ <= base_dt + str_to_td(u.closing) + str_to_td(u.duration):
+                                    logging.info('Getting to replace if min')
+                                    
+                                    # If dt_ passes the cutoff hour
+                                    if not cutoff and dt_ >= cutoff_dt:
+                                        cutoff = i
+                                    
+                                    # Add another layer to L and P if i == len(L) - 1
+                                    if i == len(L) - 1:
+                                        logging.info('Adding layer to L')
+                                        L.append([{} for k in xrange(S + 1)])
+                                        P.append([{} for k in xrange(S + 1)])
 
-                            dt_ = max(str_to_td(u.opening) + base_dt, \ 
-                                      depart_dt + duration_td) 
-                            
-                            # If it is still possible to enjoy the place
-                            if dt_ <= base_dt + str_to_td(u.closing) + str_to_td(u.duration):
-                                # If dt_ passes the cutoff hour
-                                if not cutoff and dt_ >= cutoff_dt:
-                                    cutoff = i
-
-                                # Add another layer to L and P if i == len(L) - 1
-                                if i == len(L) - 1:
-                                    L.append([{} for k in xrange(S + 1)])
-                                    P.append([{} for k in xrange(S + 1)])
-
-                                p_ = p + gain(u, dt_, pref)
-                                gain_idx = gain_index(p_)
-
-                                # Replace-if-min step in the algorithm
-                                if u_id in L[i+1][gain_idx]:
-                                    if dt_ < L[i+1][gain_idx][u_id][0]: # Replace if dt_ < the current dt
+                                    p_ = p + gain(u, dt_, pref)
+                                    gain_idx = gain_index(p_)
+                                    logging.info('Look up for col index')
+                                    logging.info(gain_idx)
+                                    # Replace-if-min step in the algorithm
+                                    if u_id in L[i+1][gain_idx]:
+                                        if dt_ < L[i+1][gain_idx][u_id][0]: # Replace if dt_ < the current dt
+                                            new_visited = visited.copy()
+                                            new_visited.add(u_id)
+                                            L[i+1][gain_idx][u_id] = (dt_, p_, new_visited)
+                                            P[i+1][gain_idx][u_id] = (v_id, j)
+                                    else:
                                         new_visited = visited.copy()
                                         new_visited.add(u_id)
                                         L[i+1][gain_idx][u_id] = (dt_, p_, new_visited)
                                         P[i+1][gain_idx][u_id] = (v_id, j)
-                                else:
-                                    new_visited = visited.copy()
-                                    new_visited.add(u_id)
-                                    L[i+1][gain_idx][u_id] = (dt_, p_, new_visited)
-                                    P[i+1][gain_idx][u_id] = (v_id, j)
             i += 1
         #--- End of while loop ---
         
+        logging.info(L)
+        logging.info(P)
         # Assign the whole tour to trip. Add to trip_visited
         row = -1
         col = next(c for c in xrange(S, -1, -1) if L[row][c])
         last_cell = L[row][col]
         v_id = min(last_cell, key=last_cell.get) # Place id of the last cell
         dt = last_cell[v_id][0] # dt of the last place
-
+        
         while v_id is not None:
-            trip[n].append((places_dict(v_id), dt_to_epoch(dt) * 1000))
+            trip[n].append((places_dict[v_id], dt_to_epoch(dt) * 1000))
             trip_visited.add(v_id)
             v_id, col = P[row][col][v_id]
-            dt = L[row][col][v_id]
             row -= 1
+            
+            if v_id != None:
+                dt = L[row][col][v_id][0]
 
         # Make a tuple with cutoff
+        trip[n].reverse()
         trip[n] = (trip[n], cutoff)
     # End of for loop
     # Do stuff here to generate back the trip or simply pass trip to jinja2 to generate.
     return trip
-
-
-
-
-
-
-
-
-                        
-
-
-
-
-
-
-    
-    
 
