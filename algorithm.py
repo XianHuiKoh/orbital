@@ -17,6 +17,7 @@ def memoized_route(func):
     # Read data from datastore
     quer = Distance.query(ancestor=settings.DEFAULT_PARENT_DIST_KEY)
     cache = {(p.from_id, p.to_id): p.duration_value for p in quer}
+    logging.info((len(cache)))
     @wraps(func)
     def wrap(fr, to, *args):
         k = (fr.key.id(), to.key.id())
@@ -27,7 +28,8 @@ def memoized_route(func):
             dur_text = duration['text']
             cache[k] = dur_val
             # put to datastore
-            dist = Distance(from_id=fr.key.id(),
+            dist = Distance(parent=settings.DEFAULT_PARENT_DIST_KEY,
+                            from_id=fr.key.id(),
                             to_id=to.key.id(),
                             duration_value=dur_val,
                             duration_text=dur_text)
@@ -67,7 +69,7 @@ def gain(place, dt, pref='culture'):
         time_gain = 'morning'
     elif t <= datetime.time(18,0): 
         time_gain = 'afternoon'
-    elif t <= datetime.time(23,59):
+    else: 
         time_gain = 'evening'
 
     total_gain += (place.popularity / 10) * (1 + getattr(place, time_gain))
@@ -115,9 +117,6 @@ def find_route(fr, to, depart_time, postal=False):
     url = base_url + '?' + urllib.urlencode(para)
 
     dt = datetime.datetime.fromtimestamp(depart_time)
-    logging.info(dt)
-    logging.info(url)
-
     
     while success != True and attempts < 3:
         result = json.load(urllib.urlopen(url))
@@ -147,7 +146,6 @@ def dur(result):
     if (type(result) is not int):
         result = result['routes'][0]['legs'][0]['duration']['value']
 
-    logging.info(result)
     return datetime.timedelta(seconds=result)
 
 # We give a 4-hour difference between the touchdown time of the user on the first day and the starting time
@@ -228,13 +226,6 @@ def generate_trip(start_dt, end_dt, hotel, pref='culture', pace='moderate'):
     start_dt = start_dt + datetime.timedelta(hours=TIME_DELAY)
     end_dt = end_dt - datetime.timedelta(hours=TIME_DELAY)
 
-    logging.info("Trip info:")
-    logging.info(start_dt)
-    logging.info(end_dt)
-    # Debugging
-    logging.info((dt_to_epoch(start_dt)))
-    logging.info((dt_to_epoch(end_dt)))
-
     # Number of places
     N = len(places_dict)
     # Biggest possible gain -> max column
@@ -288,19 +279,12 @@ def generate_trip(start_dt, end_dt, hotel, pref='culture', pace='moderate'):
                             # If depart time is too late then call it a day
                             depart_dt = dt + process(v, pace)
                             if not too_late(depart_dt):
-                                logging.info(u)
-                                logging.info(v)
                                 route = find_route(v, u, dt_to_epoch(depart_dt))
                                 duration_td = dur(route)
                                 
                                 dt_ = max(str_to_td(u.opening) + base_dt, depart_dt + duration_td) 
-                                logging.info(dt_)
-                                logging.info(base_dt)
-                                logging.info((str_to_td(u.closing)))
-                                logging.info((str_to_td(u.duration)))
                                 # If it is still possible to enjoy the place
                                 if dt_ <= base_dt + str_to_td(u.closing) + str_to_td(u.duration):
-                                    logging.info('Getting to replace if min')
                                     
                                     # If dt_ passes the cutoff hour
                                     if not cutoff and dt_ >= cutoff_dt:
@@ -308,14 +292,11 @@ def generate_trip(start_dt, end_dt, hotel, pref='culture', pace='moderate'):
                                     
                                     # Add another layer to L and P if i == len(L) - 1
                                     if i == len(L) - 1:
-                                        logging.info('Adding layer to L')
                                         L.append([{} for k in xrange(S + 1)])
                                         P.append([{} for k in xrange(S + 1)])
 
                                     p_ = p + gain(u, dt_, pref)
                                     gain_idx = gain_index(p_)
-                                    logging.info('Look up for col index')
-                                    logging.info(gain_idx)
                                     # Replace-if-min step in the algorithm
                                     if u_id in L[i+1][gain_idx]:
                                         if dt_ < L[i+1][gain_idx][u_id][0]: # Replace if dt_ < the current dt
@@ -331,8 +312,6 @@ def generate_trip(start_dt, end_dt, hotel, pref='culture', pace='moderate'):
             i += 1
         #--- End of while loop ---
         
-        logging.info(L)
-        logging.info(P)
         # Assign the whole tour to trip. Add to trip_visited
         row = -1
         col = next(c for c in xrange(S, -1, -1) if L[row][c])
