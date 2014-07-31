@@ -166,9 +166,37 @@ class YourTrip(webapp2.RequestHandler):
     def post(self):
         self.redirect('/planner')
 
+class Contact(webapp2.RequestHandler):
+    def get(self):
+        template = jinja_environment.get_template("contact.html")
+        template_values = {}
+        self.response.write(template.render(template_values))
+
+    def post(self): 
+        feedback_comments          = self.request.get('comments')
+        
+        message = mail.EmailMessage(sender="xianhui.koh@gmail.com",
+                            subject="Feedback")
+
+        message.to = "xianhui.koh@gmail.com"
+        message.body = "%s" % (feedback_comments)
+
+        message.send() 
+class ContactFeedback(webapp2.RequestHandler):
+
+    def get(self):
+        template = jinja_environment.get_template("feedbackdone.html")
+        template_values = {}
+        self.response.write(template.render(template_values))
+
+    def post(self): 
+        self.redirect('/feedback') 
+
 app = webapp2.WSGIApplication([
         ('/', MainHandler),
         ('/planner', Planner),
         ('/placeentry', PlaceEntry),
-        ('/yourtrip', YourTrip)
+        ('/yourtrip', YourTrip),
+        ('/contact', Contact),
+        ('/feedback', ContactFeedback)
 ], debug=True)
