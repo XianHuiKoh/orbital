@@ -7,7 +7,14 @@ img {
     margin: 0 auto;
 }
 
-#designer {
+.panel-heading {
+	background-color: #637B4B !important;
+	border-width: 8px !important;
+	color: white !important;
+	
+}
+
+.designer {
 	background-color: #838B8B;
 	border-radius: 15px;
 	border-style: solid;
