@@ -20,37 +20,60 @@ $(document).ready(function() {
 
 	// Changing date format of calendar
 	// Commit: Set basic validation.
-	$('#start_datepicker').datepicker({
-		dateFormat:'dd/mm/yy',
+	
+	$('#start_datepicker').datetimepicker({
+		dateFormat: 'dd/mm/yy',
+		timeFormat: 'hh:mm tt',
 		minDate: new Date(),
-		maxDate: '+2y',
-		onSelect: function(dateText, inst) {
-			$('#end_datepicker').datepicker('option','minDate',
-				$('#start_datepicker').datepicker('getDate'));
-
-
-			// If end_datepicker is filled. User changes the start date
-			if ($('#end_datepicker').datepicker('getDate') == 0 ||
-				$('#end_datepicker').datepicker('getDate') != null) {
+		stepMinute: 5,
+			
+		onClose: function(dateText, inst) {
+			if ($("#end_datepicker").val() != '') {
+				var startDate = $("#start_datepicker").datetimepicker('getDate');
+				var endDate = $("end_datepicker").datetimepicker('getDate');
+				if (startDate > endDate) {
+					$("#end_datepicker").datetimepicker('setDate', startDate);	
+				} else {
+					// If start_datepicker is filled. User changes the start date
 					var mSecsInDay = 86400000;
-					var dayDiff = ($('#end_datepicker').datepicker('getDate') - 
-						$('#start_datepicker').datepicker('getDate')) / mSecsInDay + 1;
-					$('#inputDuration').val(dayDiff); 
+					var dayDiff = ($('#end_datepicker').datetimepicker('getDate') - 
+						$('#start_datepicker').datetimepicker('getDate')) / mSecsInDay + 1;
+					$('#inputDuration').val(Math.round(dayDiff)); 
 				}
+			}
+		},
+		onSelect: function (selectedDateTime){
+			$('#end_datepicker').datetimepicker('option', 'minDate', $('#start_datepicker').datetimepicker('getDate') );
 		}
 	});
 
-	$("#end_datepicker").datepicker({
-		dateFormat:'dd/mm/yy',
+	$('#end_datepicker').datetimepicker({
+		dateFormat: 'dd/mm/yy',
+		timeFormat: 'hh:mm tt',
 		minDate: new Date(),
-		onSelect: function() {
-			var mSecsInDay = 86400000;
-			var dayDiff = ($('#end_datepicker').datepicker('getDate') - 
-				$('#start_datepicker').datepicker('getDate')) / mSecsInDay + 1;
-			$('#inputDuration').val(dayDiff); 
+		stepMinute: 5,
+
+		onSelect: function(selectedDateTime) {
+			$('#start_datepicker').datetimepicker('option', 'maxDate', $('#end_datepicker').datetimepicker('getDate') );
+		},
+		
+		onClose: function(dateText, inst) {
+			if ($("#start_datepicker").val() != '') {
+				var startDate = $("#start_datepicker").datetimepicker('getDate');
+				var endDate = $("end_datepicker").datetimepicker('getDate');
+				if (startDate > endDate) {
+					$("#start_datepicker").datetimepicker('setDate', endDate);
+				}	else {
+					// If start_datepicker is filled. User changes the start date
+					var mSecsInDay = 86400000;
+					var dayDiff = ($('#end_datepicker').datetimepicker('getDate') - 
+						$('#start_datepicker').datetimepicker('getDate')) / mSecsInDay + 1;
+					$('#inputDuration').val(Math.round(dayDiff)); 
+				}
+			}
 		}
 	});
-
+	
 	// Implementing sliders for budgets
 	$("#slider-lodging").slider({
 		range: "min",
@@ -145,24 +168,26 @@ $(document).ready(function() {
 	// Selects the desired pace
 	$( "#selectable_pace" ).selectable({
 		stop: function() {
-			var result = $( "#select-result" ).empty();
+			var result = $( "#pace_input" );
 			$( ".ui-selected", this ).each(function() {
-				var index = $( "#selectable li" ).index( this );
-				result.append( " #" + ( index + 1 ) );
+				result.val($(this).text().toLowerCase());
 			});
 		}
 	});
 
-	$( "#selectable_style" ).selectable({
+	$( "#selectable_preference" ).selectable({
 		stop: function() {
-			var result = $( "#select-result" ).empty();
+			var result = $( "#preference_input" );
 			$( ".ui-selected", this ).each(function() {
-				var index = $( "#selectable li" ).index( this );
-				result.append( " #" + ( index + 1 ) );
+				result.val($(this).text().toLowerCase());
 			});
 		}
 	});
-
+	
+	
+	$("#generate_button").click(function(){
+		$('form').submit();
+	});
 	// Singapore map
 	function initialize() {
   		var myLatlng = new google.maps.LatLng(1.3400,103.8100);
