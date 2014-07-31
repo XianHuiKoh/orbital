@@ -1,0 +1,22 @@
+<!-- Template page -->
+{% extends "base.html" %}
+{% block title %} Your Trip{% endblock %}
+{% block links %}{% endblock %}
+{% block content %}
+
+{% for tour in trip %}
+	<div>
+		<h1>Tour number : {{ loop.index }}</h1>
+		<p> Tour: {{tour[0]}} </p>
+		{% for route in tour[0] %}
+			<p> Route: {{route}} </p>
+			<p> Name: {{route[0].name}} <br> Address: {{route[0].address}}</p>
+			<p> Starting time: {{route[1]}}</p>
+			<hr>
+		{% endfor %}
+	</div>
+{% endfor %}
+
+{% endblock %}
+
+{% block scripts %}{% endblock %}
