@@ -18,6 +18,9 @@ handlers:
 - url: /scripts
   static_dir: scripts
 
+- url: /files
+  static_dir: files
+
 # Twitter Bootstrap
 - url: /bootstrap
   static_dir: bootstrap
