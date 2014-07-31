@@ -19,6 +19,7 @@ import jinja2
 import os
 import logging
 import settings
+import json
 
 from google.appengine.ext import ndb
 from datetime import datetime, date, time, timedelta
@@ -36,17 +37,16 @@ jinja_environment = jinja2.Environment(
                                     extensions=['jinja2.ext.autoescape'])
 
 
-DEFAULT_PARENT_KEY = ndb.Key(Place, 'Singapore') # Using this for ancestor query
-
 class PlaceEntry(webapp2.RequestHandler):
     """ Form for getting and displaying places. """
 
     def show(self):
         # Displays the page. Used by both get and post
-        places = Place.query(ancestor=DEFAULT_PARENT_KEY).order(-Place.popularity, Place.name)
+        places = Place.query(ancestor=settings.DEFAULT_PARENT_KEY).order(-Place.popularity, Place.name)
         
         places_dict = {place.key.id(): place for place in Place.query(ancestor=settings.DEFAULT_PARENT_KEY)}
-
+        for k, v in places_dict.items():
+            logging.info(v)
         
         template_values = {
             'places': places
@@ -60,7 +60,7 @@ class PlaceEntry(webapp2.RequestHandler):
 
     def post(self):
         # Retrieve Places
-        place = Place(parent=DEFAULT_PARENT_KEY)
+        place = Place(parent=settings.DEFAULT_PARENT_KEY)
 
         place.name              = self.request.get('name').rstrip()
         place.desc              = self.request.get('desc').rstrip()
@@ -166,9 +166,35 @@ class YourTrip(webapp2.RequestHandler):
     def post(self):
         self.redirect('/planner')
 
+class MassEntry(webapp2.RequestHandler):
+    def post(self):
+        with open('PlacesOfAttraction.json', 'r') as infile:
+            data = json.load(infile)
+            for i in xrange(15):
+                d = data[i]
+                place = Place(parent=settings.DEFAULT_PARENT_KEY)
+
+                for k, v in d.items():
+                    if k.strip():
+                        if k not in ('handicapped', 'children', 'infants', 'elderlies'):
+                            setattr(place, k, v)
+                        else:
+                            v = v and True or False
+                            setattr(place, k, v)
+
+                place.night = 0.25
+                place.morning = 0.25
+                place.afternoon = 0.25
+                place.evening = 0.25
+                place.put()
+
+            infile.close()
+            self.redirect('/placeentry')
+
 app = webapp2.WSGIApplication([
         ('/', MainHandler),
         ('/planner', Planner),
         ('/placeentry', PlaceEntry),
+        ('/placeentrymass', MassEntry),
         ('/yourtrip', YourTrip)
 ], debug=True)
