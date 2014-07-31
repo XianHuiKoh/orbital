@@ -17,6 +17,11 @@
 				<li><a href="#miscellaneous">Miscellaneous</a></li>
 			</ul>
 		</div>
+		<hr>
+		<div class="text-center">
+			<button type="button" class="btn btn-success btn-lg" id="generate_button" data-loading-text="Hooray!!!" type="submit">
+				Generate Trip</button>
+		</div>
 	</div>
 	<div class="col-md-4">
 		<div class="tab-content">
@@ -30,18 +35,18 @@
 			<!-- Date and Time -->
 			<div class="tab-pane" id="date">
 				<h2>Date &amp; Time</h2>
-				<form>
+				<form action='/planner' method='post'>
 					<div class="form-group">
 						<p>From:</p>
-						<input type="text" id="start_datepicker" class="form-control"/>
+						<input type="text" id="start_datepicker" name="start_datetime" class="form-control"/>
 					</div>
 					<div class="form-group">
 						<p>To:</p>
-						<input type="text" id="end_datepicker" class="form-control"/>
+						<input type="text" id="end_datepicker" name="end_datetime" class="form-control"/>
 					</div>
 					<p>Duration (in days):</p>
 					<input id="inputDuration" class="form-control" type="number" name="duration" readonly>
-				</form>
+				<!--/form-->
 			</div>
 
 			<!-- Budget -->
@@ -89,21 +94,25 @@
 						<li class="ui-widget-content">Fast</li>
 						<li class="ui-widget-content">Hectic</li>
 					</ol>
+					<input id="pace_input" name="pace_input" type="hidden">			
 				</p>
 				<p>Style:
-					<ol id="selectable_style">
+					<ol id="selectable_preference">
+						<li class="ui-widget-content">Nature</li>
+						<li class="ui-widget-content">Shopping</li>
 						<li class="ui-widget-content">Culture</li>
 						<li class="ui-widget-content">Family</li>
 						<li class="ui-widget-content">Romance</li>
 						<li class="ui-widget-content">Food</li>
 					</ol>
+					<input id="preference_input" type="hidden" name="preference_input">
 				</p>
 			</div>
 
 			<!-- Miscellaneous -->
 			<div class="tab-pane" id="miscellaneous">
 				<h2>Miscellaneous</h2>
-				<form>
+				<!--form-->
 					<p>Number of travelling handicapped individuals:</p>
 					<input id="inputHandicapped" class="form-control" type="number" min="0" max="100" name="handicapped">
 					<p>Number of travelling infants:</p>
@@ -123,4 +132,8 @@
 		</div>
 	</div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script type="text/javascript" src="../jquery/jquery-ui-1.11.0.custom/jquery-ui-timepicker-addon.js"></script>
 {% endblock %}

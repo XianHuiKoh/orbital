@@ -10,9 +10,9 @@ class Place(ndb.Model):
         popularity(Float):  A score of how popular the place is. Used in calculation of preference scored.
         image(String):      Name of image stored in static folder /images
         loc_type(String):   Property of a place. Either 'Outdoor', 'Indoor', or 'Both'.
-        duration(Int):      (in minute) A suggested duration to spend at a place.
-        opening(Int):       (in minute) Opening hours. Absolute minute from 00:00.
-        closing(Int):       (in minute) Closing hours. Absolute minute from 00:00.
+        duration(String):   (in minute) A suggested duration to spend at a place.
+        opening(String):    (in minute) Opening hours. Absolute minute from 00:00.
+        closing(String):    (in minute) Closing hours. Absolute minute from 00:00.
         
         ---- Preference Score: These scores are multiplier of Popularity. All add up to 1.0 ----
         nature(Float):      Determine how a place is suitable for nature tag.
@@ -41,9 +41,9 @@ class Place(ndb.Model):
     popularity      = ndb.FloatProperty()
     image           = ndb.StringProperty()
     loc_type        = ndb.StringProperty()
-    duration        = ndb.IntegerProperty()
-    opening         = ndb.IntegerProperty()
-    closing         = ndb.IntegerProperty()
+    duration        = ndb.StringProperty()
+    opening         = ndb.StringProperty()
+    closing         = ndb.StringProperty()
 
     nature          = ndb.FloatProperty()
     shopping        = ndb.FloatProperty()
@@ -62,6 +62,7 @@ class Place(ndb.Model):
     infants         = ndb.BooleanProperty()
     elderlies       = ndb.BooleanProperty()
 
+    # Maybe redundant
     def to_minute(self, time):
         if time:
             hour, minute = (int(d) for d in time.split(':'))
@@ -72,3 +73,25 @@ class Place(ndb.Model):
                 print 'Warning: invalid format for time'
         else:
             return 0
+
+class Hotel(ndb.Model):
+    """Datastore model to store Hotel
+    """
+    name            = ndb.StringProperty()
+    desc            = ndb.TextProperty()
+    address         = ndb.StringProperty()
+    postal          = ndb.StringProperty()
+    
+    image           = ndb.StringProperty()
+    duration        = ndb.StringProperty()
+    opening         = ndb.StringProperty()
+    closing         = ndb.StringProperty()
+
+class Distance(ndb.Model):
+    """Model to store distance (in seconds) (through TRANSIT)"""
+    from_id         = ndb.IntegerProperty()
+    to_id           = ndb.IntegerProperty()
+
+    duration_value  = ndb.IntegerProperty()
+    duration_text   = ndb.StringProperty()
+
