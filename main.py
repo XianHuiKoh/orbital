@@ -22,6 +22,8 @@ import settings
 import json
 
 from google.appengine.ext import ndb
+from google.appengine.api import mail
+
 from datetime import datetime, date, time, timedelta
 from datamodel import *
 from algorithm import generate_trip
@@ -32,9 +34,14 @@ def guess_autoescape(template_name):
     ext = template_name.rsplit('.', 1)[1]
     return ext in ('html', 'htm', 'xml')
 
+def tojson(data):
+    return json.dumps(data) 
+
 jinja_environment = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__) + "/templates"),
                                     extensions=['jinja2.ext.autoescape'])
+
+jinja_environment.filters['tojson'] = tojson
 
 
 class PlaceEntry(webapp2.RequestHandler):
@@ -107,14 +114,23 @@ class Planner(webapp2.RequestHandler):
         template_values = {}
         self.response.write(template.render(template_values))
 
+   
+class YourTrip(webapp2.RequestHandler):
+    def show(self, template_values=None):
+        template = jinja_environment.get_template("yourtrip.html")
+        if template_values is None:
+            template_values = {}
+        self.response.write(template.render(template_values))
+   
+    def get(self):
+        self.show()
+
     def post(self):
         """Do calculation of the trip. And pass the results as a complete 
         list to template_values()
 
         Then display the results accordingly.
         """
-        template = jinja_environment.get_template("yourtrip.html")
-        
         # Taking parameter from the form
         start_datetime      = self.request.get('start_datetime')
         end_datetime        = self.request.get('end_datetime')
@@ -123,29 +139,24 @@ class Planner(webapp2.RequestHandler):
         pace                = self.request.get('pace_input')
         misc_pref           = self.request.get('misc_input')
         
-        logging.info(start_datetime)
-        logging.info(end_datetime)
-        logging.info(hotel)
-        logging.info(preference)
-        logging.info(pace)
-        logging.info(misc_pref)
+        
         # Process parameter from form
         start_datetime = datetime.strptime(start_datetime, '%d/%m/%Y %I:%M %p')
         end_datetime = datetime.strptime(end_datetime, '%d/%m/%Y %I:%M %p')
         # TODO: Implement hotel option and reflect choice here
-        hotel = Hotel(name="The Forest by Wangz",
-                      desc="Very nice hotel owned by Wangz, I guess",
-                      address="145A Moulmein Rd, Singapore 308108",
-                      postal="Singapore 308108",
-                      image="",
-                      duration="00:00",
-                      opening="00:00",
-                      closing="23:59")
+        # hotel = Hotel(name="The Forest by Wangz",
+        #               desc="Very nice hotel owned by Wangz, I guess",
+        #               address="145A Moulmein Rd, Singapore 308108",
+        #               postal="Singapore 308108",
+        #               image="",
+        #               duration="00:00",
+        #               opening="00:00",
+        #               closing="23:59")
         # Store the place
-        hotel.put()
+        qry = ndb.gql("SELECT * FROM Hotel WHERE name =	'The Forest by Wangz'")
+        for i in qry:
+            hotel = i
 
-        logging.info('Putting hotel')
-        logging.info(hotel)
         # Magic happens here. Then the magic will pass the complete list of
         # the initerary along as template_values for displaying.
         
@@ -155,17 +166,9 @@ class Planner(webapp2.RequestHandler):
         template_values = {
             'trip': trip            
         }
-        self.response.write(template.render(template_values))
+        self.show(template_values)
 
-class YourTrip(webapp2.RequestHandler):
-    def get(self):
-        template = jinja_environment.get_template("yourtrip.html")
-        template_values = {}
-        self.response.write(template.render(template_values))
-
-    def post(self):
-        self.redirect('/planner')
-
+    
 class MassEntry(webapp2.RequestHandler):
     def post(self):
         with open('PlacesOfAttraction.json', 'r') as infile:
@@ -192,38 +195,44 @@ class MassEntry(webapp2.RequestHandler):
             self.redirect('/placeentry')
 
 class Contact(webapp2.RequestHandler):
-    def get(self):
+    def show(self, template_values=None):
         template = jinja_environment.get_template("contact.html")
-        template_values = {}
-        self.response.write(template.render(template_values))
-
-    def post(self): 
-        feedback_comments          = self.request.get('comments')
+        if template_values is None:
+            template_values = {}
         
-        message = mail.EmailMessage(sender="xianhui.koh@gmail.com",
-                            subject="Feedback")
-
-        message.to = "xianhui.koh@gmail.com"
-        message.body = "%s" % (feedback_comments)
-
-        message.send() 
-
-class ContactFeedback(webapp2.RequestHandler):
-
-    def get(self):
-        template = jinja_environment.get_template("feedbackdone.html")
-        template_values = {}
         self.response.write(template.render(template_values))
 
     def post(self): 
-        self.redirect('/feedback') 
+      #  feedback_comments          = self.request.get('comments')
+      #  
+      #  message = mail.EmailMessage(sender="xianhui.koh@gmail.com",
+      #                      subject="Feedback")
 
+      #  message.to = "xianhui.koh@gmail.com"
+      #  message.body = "%s" % (feedback_comments)
+
+      #  message.send()
+        
+        mail.send_mail(    
+                            sender='Xian Hui <xianhui.koh@gmail.com>',
+                            to='Xian Hui <xianhui.koh@gmail.com>',
+                            cc='Nguyen Thanh Nhan <ngthnhan93@gmail.com>',
+                            subject='Feedback on SingaPlanner',
+                            body=self.request.get('comments')
+                        )
+
+        
+        template_values = {"thank_message":"Thank you!"}
+        self.show(template_values)
+    
+    def get(self):
+        self.show()    
+        
 app = webapp2.WSGIApplication([
         ('/', MainHandler),
         ('/planner', Planner),
         ('/placeentry', PlaceEntry),
         ('/placeentrymass', MassEntry),
         ('/yourtrip', YourTrip),
-        ('/contact', Contact),
-        ('/feedback', ContactFeedback)
+        ('/contact', Contact)
 ], debug=True)

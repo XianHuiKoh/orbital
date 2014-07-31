@@ -22,6 +22,7 @@ def memoized_route(func):
     def wrap(fr, to, *args):
         k = (fr.key.id(), to.key.id())
         if k not in cache:
+            logging.info("Not cached-------------") 
             route = func(fr, to, *args)
             duration = route['routes'][0]['legs'][0]['duration']
             dur_val = duration['value']
@@ -31,6 +32,8 @@ def memoized_route(func):
             dist = Distance(parent=settings.DEFAULT_PARENT_DIST_KEY,
                             from_id=fr.key.id(),
                             to_id=to.key.id(),
+                            from_postal=fr.postal,
+                            to_postal=to.postal,
                             duration_value=dur_val,
                             duration_text=dur_text)
             dist.put()
@@ -101,7 +104,6 @@ def find_route(fr, to, depart_time, postal=False):
         origin = fr.address.encode('utf-8')
         destination = to.address.encode('utf-8')
     
-    logging.info('Finding route from %s to %s' % (origin, destination))
     base_url = 'https://maps.googleapis.com/maps/api/directions/json'
     para =  {
                 'origin'            : origin,
@@ -123,12 +125,10 @@ def find_route(fr, to, depart_time, postal=False):
         attempts += 1
 
         if result['status'] == 'OK':
-            logging.info('Status is OK')
             return result
 
         elif result['status'] == 'ZERO_RESULTS' and not postal:
             # Retry using postal code
-            logging.info('Status is ZERO_RESULTS, retrying with postal')
             return find_route(fr, to, depart_time, postal=True)
 
         elif result['status'] == 'OVER_QUERY_LIMIT':
@@ -236,7 +236,7 @@ def generate_trip(start_dt, end_dt, hotel, pref='culture', pace='moderate'):
     trip_visited = set([0])
     # Lists of a pair of places id and the number of places before evening cutoff 
     trip = [[] for i in xrange(tour_num)] 
-
+    trip_json = {"trip":[]}
     # If start_dt is too late. Start tour on the next date.
     tour_start_dt = too_late(start_dt) and start_dt + datetime.timedelta(days=1) or start_dt 
     
@@ -320,7 +320,7 @@ def generate_trip(start_dt, end_dt, hotel, pref='culture', pace='moderate'):
         dt = last_cell[v_id][0] # dt of the last place
         
         while v_id is not None:
-            trip[n].append((places_dict[v_id], dt_to_epoch(dt) * 1000))
+            trip[n].append((places_dict[v_id].to_dict(), dt_to_epoch(dt) * 1000))
             trip_visited.add(v_id)
             v_id, col = P[row][col][v_id]
             row -= 1
@@ -329,9 +329,11 @@ def generate_trip(start_dt, end_dt, hotel, pref='culture', pace='moderate'):
                 dt = L[row][col][v_id][0]
 
         # Make a tuple with cutoff
+        # Making json object
+
         trip[n].reverse()
-        trip[n] = (trip[n], cutoff)
-    # End of for loop
+        trip[n] = [trip[n], cutoff]
+        # End of for loop
     # Do stuff here to generate back the trip or simply pass trip to jinja2 to generate.
     return trip
 

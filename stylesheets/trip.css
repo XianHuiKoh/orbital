@@ -1,0 +1,16 @@
+#map_canvas {
+	/*height: 800px;*/
+	height: 580px;
+}
+
+#tourDetails {
+	height: 580px;
+	overflow: auto;
+}
+
+/*    
+.fill { 
+	min-height: 100%;
+	height: 100%;
+}
+*/

@@ -20,8 +20,8 @@ $(document).ready(function() {
 
 	// Changing date format of calendar
 	// Commit: Set basic validation.
-	
-	$('#start_datepicker').datetimepicker({
+
+	$("#start_datepicker").datetimepicker({
 		dateFormat: 'dd/mm/yy',
 		timeFormat: 'hh:mm tt',
 		minDate: new Date(),
@@ -42,19 +42,19 @@ $(document).ready(function() {
 				}
 			}
 		},
-		onSelect: function (selectedDateTime){
-			$('#end_datepicker').datetimepicker('option', 'minDate', $('#start_datepicker').datetimepicker('getDate') );
+		onSelect: function(selectedDateTime){
+			$('#end_datepicker').datetimepicker('option', 'minDate', $('#start_datepicker').datetimepicker('getDate'));
 		}
 	});
 
-	$('#end_datepicker').datetimepicker({
+	$("#end_datepicker").datetimepicker({
 		dateFormat: 'dd/mm/yy',
 		timeFormat: 'hh:mm tt',
 		minDate: new Date(),
 		stepMinute: 5,
 
 		onSelect: function(selectedDateTime) {
-			$('#start_datepicker').datetimepicker('option', 'maxDate', $('#end_datepicker').datetimepicker('getDate') );
+			$('#start_datepicker').datetimepicker('option', 'maxDate', $('#end_datepicker').datetimepicker('getDate'));
 		},
 		
 		onClose: function(dateText, inst) {
@@ -277,5 +277,7 @@ $(document).ready(function() {
       		animation: google.maps.Animation.DROP
   		});
 	}
-	google.maps.event.addDomListener(window, 'load', initialize);
+
+
+	initialize();
 });

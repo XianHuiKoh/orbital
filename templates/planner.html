@@ -35,7 +35,7 @@
 			<!-- Date and Time -->
 			<div class="tab-pane" id="date">
 				<h2>Date &amp; Time</h2>
-				<form action='/planner' method='post'>
+				<form action='/yourtrip' method='post'>
 					<div class="form-group">
 						<p>From:</p>
 						<input type="text" id="start_datepicker" name="start_datetime" class="form-control"/>
@@ -46,83 +46,104 @@
 					</div>
 					<p>Duration (in days):</p>
 					<input id="inputDuration" class="form-control" type="number" name="duration" readonly>
-				<!--/form-->
-			</div>
-
-			<!-- Budget -->
-			<div class="tab-pane" id="budget">
-				<h2>Budget</h2>
-				<p>
-					<label for="lodging">Lodging:</label>
-					<input type="text" id="lodging" class="slider-val">
-				</p>
-				<div id="slider-lodging"></div>
-				<p>
-					<label for="fb">Food and Beverage:</label>
-					<input type="text" id="fb" class="slider-val">
-				</p>
-				<div id="slider-fb"></div>
-				<p>
-					<label for="shopping">Shopping:</label>
-					<input type="text" id="shopping" class="slider-val">
-				</p>
-				<div id="slider-shopping"></div>
-				<p>
-					<label for="misc">Miscellaneous:</label>
-					<input type="text" id="misc" class="slider-val">
-				</p>
-				<div id="slider-misc"></div>
-
-				<br>
-				<div class="text-center">
-					<h3>
-						<strong>
-							<p><u>Total</u></p>
-							<p>$<span id='total-budget'></span></p>
-						</strong>
-					</h3>
+					<!--/form-->
 				</div>
-			</div>
 
-			<!-- Preference -->
-			<div class="tab-pane" id="preference">
-				<h2>Preference</h2>
-				<p>Pace:
-					<ol id="selectable_pace">
-						<li class="ui-widget-content">Slow</li>
-						<li class="ui-widget-content">Moderate</li>
-						<li class="ui-widget-content">Fast</li>
-						<li class="ui-widget-content">Hectic</li>
-					</ol>
-					<input id="pace_input" name="pace_input" type="hidden">			
-				</p>
-				<p>Style:
-					<ol id="selectable_preference">
-						<li class="ui-widget-content">Nature</li>
-						<li class="ui-widget-content">Shopping</li>
-						<li class="ui-widget-content">Culture</li>
-						<li class="ui-widget-content">Family</li>
-						<li class="ui-widget-content">Romance</li>
-						<li class="ui-widget-content">Food</li>
-					</ol>
-					<input id="preference_input" type="hidden" name="preference_input">
-				</p>
-			</div>
+				<!-- Budget -->
+				<div class="tab-pane" id="budget">
+					<h2>Budget</h2>
+					<p>
+						<label for="lodging">Lodging:</label>
+						<input type="text" id="lodging" class="slider-val">
+					</p>
+					<div id="slider-lodging"></div>
+					<p>
 
-			<!-- Miscellaneous -->
-			<div class="tab-pane" id="miscellaneous">
-				<h2>Miscellaneous</h2>
-				<!--form-->
-					<p>Number of travelling handicapped individuals:</p>
-					<input id="inputHandicapped" class="form-control" type="number" min="0" max="100" name="handicapped">
-					<p>Number of travelling infants:</p>
-					<input id="inputInfant" class="form-control" type="number" min="0" max="100" name="infants">
-					<p>Food Preference:</p>
-					<label for="food"><input type="radio" id="food" name="food" value="vegetarian" /> Vegetarian</label><br>
-					<label for="food"><input type="radio" id="food" name="food" value="vegan" /> Vegan</label><br>
-					<label for="food"><input type="radio" id="food" name="food" value="chinese" /> Chinese</label><br>
-					<label for="food"><input type="radio" id="food" name="food" value="malay" /> Malay</label><br>
-					<label for="food"><input type="radio" id="food" name="food" value="indian" /> Indian</label>
+						<label for="fb">Food and Beverage:</label>
+						<input type="text" id="fb" class="slider-val">
+					</p>
+					<div id="slider-fb"></div>
+					<p>
+						<label for="shopping">Shopping:</label>
+						<input type="text" id="shopping" class="slider-val">
+					</p>
+					<div id="slider-shopping"></div>
+					<p>
+						<label for="misc">Miscellaneous:</label>
+						<input type="text" id="misc" class="slider-val">
+					</p>
+					<div id="slider-misc"></div>
+
+					<br>
+					<div class="text-center">
+						<h3>
+							<strong>
+								<p><u>Total</u></p>
+								<p>$<span id='total-budget'></span></p>
+							</strong>
+						</h3>
+					</div>
+				</div>
+
+				<!-- Preference -->
+				<div class="tab-pane" id="preference">
+					<h2>Preference</h2>
+					<p>Pace:
+						<ol id="selectable_pace">
+							<li class="ui-widget-content">Slow</li>
+							<li class="ui-widget-content">Moderate</li>
+							<li class="ui-widget-content">Fast</li>
+							<li class="ui-widget-content">Hectic</li>
+						</ol>
+						<input id="pace_input" name="pace_input" type="hidden">			
+					</p>
+					<p>Style:
+						<ol id="selectable_preference">
+							<li class="ui-widget-content">Nature</li>
+							<li class="ui-widget-content">Shopping</li>
+							<li class="ui-widget-content">Culture</li>
+							<li class="ui-widget-content">Family</li>
+							<li class="ui-widget-content">Romance</li>
+							<li class="ui-widget-content">Food</li>
+						</ol>
+						<input id="preference_input" type="hidden" name="preference_input">
+					</p>
+				</div>
+
+				<!-- Miscellaneous -->
+				<div class="tab-pane" id="miscellaneous">
+					<h2>Miscellaneous</h2>
+					<!--form-->
+					<br>
+					<div class="checkbox">
+						<label>
+							<input type="checkbox" value="T" name="handicapped"> Travelling with handicapped individuals. 
+						</label>
+					</div>
+					
+					<hr>
+					
+					<div class="checkbox">
+						<label>
+							<input type="checkbox" value="T" name="elderlies"> Travelling with elderlies. 
+						</label>
+					</div>
+
+					<hr>
+
+					<div class="checkbox">
+						<label>
+							<input type="checkbox" value="T" name="infants"> Travelling with infants. 
+						</label>
+					</div>
+
+					<hr>
+
+					<div class="checkbox">
+						<label>
+							<input type="checkbox" value="T" name="children"> Travelling with children. 
+						</label>
+					</div>
 				</form>
 			</div>
 		</div>
@@ -136,4 +157,5 @@
 
 {% block scripts %}
 <script type="text/javascript" src="../jquery/jquery-ui-1.11.0.custom/jquery-ui-timepicker-addon.js"></script>
+<script type="text/javascript" src="../scripts/planner.js"></script>
 {% endblock %}

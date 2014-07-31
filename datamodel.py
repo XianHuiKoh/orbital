@@ -91,6 +91,8 @@ class Distance(ndb.Model):
     """Model to store distance (in seconds) (through TRANSIT)"""
     from_id         = ndb.IntegerProperty()
     to_id           = ndb.IntegerProperty()
+    from_postal     = ndb.StringProperty()
+    to_postal       = ndb.StringProperty()
 
     duration_value  = ndb.IntegerProperty()
     duration_text   = ndb.StringProperty()

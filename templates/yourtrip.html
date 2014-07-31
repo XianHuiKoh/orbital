@@ -1,21 +1,45 @@
 <!-- Template page -->
 {% extends "base.html" %}
 {% block title %} Your Trip{% endblock %}
-{% block links %}{% endblock %}
+{% block links %}
+<link rel="stylesheet" href="../stylesheets/trip.css">
+{% endblock %}
 {% block content %}
+<div class="row-fluid">
+	<div class="col-md-4" id="tourDetails">	
+		<ul class="pager">
+			<li class="previous"><a href="#" id="prevDay">&larr;</a></li>
+			
+			<li class="next"><a href="#" id="nextDay">&rarr;</a></li>		
+		</ul>
+		{% for tour in trip %}
+		<div class="routes" id="route{{ loop.index }}">
+			<h1>Day {{ loop.index }}</h1>
+			{% for route in tour[0] %}
+			<script type="text/javascript">
+				var data = {{route[0]|tojson|safe}};
+				console.log(data.name);
+			</script>
 
-{% for tour in trip %}
-	<div>
-		<h1>Tour number : {{ loop.index }}</h1>
-		{% for route in tour[0] %}
 			<p><h3> Place No: {{ loop.index }} </h3></p>
 			<p> Name: {{route[0].name}} <br> Address: {{route[0].address}}</p>
 			<p> Starting time: {{route[1]}}</p>
 			<hr>
+			{% endfor %}
+		</div>
 		{% endfor %}
 	</div>
-{% endfor %}
+		
+	<div class="col-md-8">
+			<div id="map_canvas"></div>
+	</div>
 
+</div>
+</div>
 {% endblock %}
 
-{% block scripts %}{% endblock %}
+{% block scripts %}
+<script type="text/javascript" src="../scripts/trip.js"></script>
+<script type="text/javascript" src="../jquery/jquery-ui-1.11.0.custom/jquery-ui-timepicker-addon.js"></script>
+{% endblock %}
+

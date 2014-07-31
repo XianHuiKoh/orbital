@@ -28,8 +28,13 @@
 	</div>
 </div>
 <h1>Feedback to Us!</h1>
-<div class="container">
-	<form class="form-horizontal" name="feedback" action='/feedback' method='post' onsubmit="return required()">
+<div>
+	{% if thank_message %}
+	<div class="text-center">
+		<h1>Thank you for your feedback</h1>
+	</div>
+	{% endif %}
+	<form class="form-horizontal" name="feedback" action='/contact' method='post' onsubmit="return required()">
 		<fieldset>
 			<div class="form-group">
 				<label class="control-label col-xs-2" for="inputComments">Feedback</label>
