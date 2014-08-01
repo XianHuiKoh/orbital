@@ -300,8 +300,6 @@ def generate_trip(start_dt, end_dt, hotel, pref='culture', pace='moderate'):
                                              minute=settings.TOUR_START_TIME.minute),   \
                             start_dt)
     
-    tour_end_dt = tour_start_dt + datetime.timedelta(days=tour_num);
-
     # Main for loop
     for n in xrange(tour_num):
         L = [[{} for j in xrange(S+1)]]
@@ -342,7 +340,8 @@ def generate_trip(start_dt, end_dt, hotel, pref='culture', pace='moderate'):
                                 
                                 dt_ = max(str_to_td(u.opening) + base_dt, depart_dt + duration_td) 
                                 # If it is still possible to enjoy the place
-                                if dt_ <= base_dt + str_to_td(u.closing) + str_to_td(u.duration):
+                                if (dt_ <= base_dt + str_to_td(u.closing) + str_to_td(u.duration)
+                                    and dt_ <= end_dt) :
                                     
                                     # If dt_ passes the cutoff hour
                                     if not cutoff and dt_ >= cutoff_dt:
