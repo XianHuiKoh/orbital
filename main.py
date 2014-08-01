@@ -228,11 +228,20 @@ class Contact(webapp2.RequestHandler):
     def get(self):
         self.show()    
         
+class Attraction(webapp2.RequestHandler):
+    def get(self):
+        template = jinja_environment.get_template("attraction.html")
+        template_values = {}
+        self.response.write(template.render(template_values))
+
+        
+        self.response.write(template.render(template_values))
 app = webapp2.WSGIApplication([
         ('/', MainHandler),
         ('/planner', Planner),
         ('/placeentry', PlaceEntry),
         ('/placeentrymass', MassEntry),
         ('/yourtrip', YourTrip),
-        ('/contact', Contact)
+        ('/contact', Contact),
+        ('/attraction', Attraction)
 ], debug=True)
