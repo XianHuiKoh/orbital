@@ -16,11 +16,12 @@ def memoized_route(func):
     cache = {}
     # Read data from datastore
     quer = Distance.query(ancestor=settings.DEFAULT_PARENT_DIST_KEY)
-    cache = {(p.from_id, p.to_id): p.duration_value for p in quer}
+    cache = {(p.from_geocode, p.to_geocode): p.duration_value for p in quer}
+    # cache = {(p.from_id, p.to_id): p.duration_value for p in quer}
     logging.info((len(cache)))
     @wraps(func)
     def wrap(fr, to, *args):
-        k = (fr.key.id(), to.key.id())
+        k = (fr.geocode, to.geocode)
         if k not in cache:
             logging.info("Not cached-------------") 
             route = func(fr, to, *args)
@@ -32,6 +33,8 @@ def memoized_route(func):
             dist = Distance(parent=settings.DEFAULT_PARENT_DIST_KEY,
                             from_id=fr.key.id(),
                             to_id=to.key.id(),
+                            from_geocode=fr.geocode,
+                            to_geocode=to.geocode,
                             from_postal=fr.postal,
                             to_postal=to.postal,
                             duration_value=dur_val,
@@ -97,13 +100,13 @@ def find_route(fr, to, depart_time, postal=False):
     Since we are only using Transit and no Waypoints, there will be only 1 route and within it, only 1 leg
     Hence, we can use index [0] to access the element
     """
-    if postal:
-        origin = fr.postal.encode('utf-8')
-        destination = to.postal.encode('utf-8')
+    if not postal:
+        origin = fr.geocode
+        destination = to.geocode
     else:
-        origin = fr.address.encode('utf-8')
-        destination = to.address.encode('utf-8')
-    
+        origin = fr.postal
+        destination = to.postal
+     
     base_url = 'https://maps.googleapis.com/maps/api/directions/json'
     para =  {
                 'origin'            : origin,
@@ -117,9 +120,7 @@ def find_route(fr, to, depart_time, postal=False):
     attempts = 0
     success = False
     url = base_url + '?' + urllib.urlencode(para)
-
-    dt = datetime.datetime.fromtimestamp(depart_time)
-    
+    logging.info(url)
     while success != True and attempts < 3:
         result = json.load(urllib.urlopen(url))
         attempts += 1
@@ -128,7 +129,6 @@ def find_route(fr, to, depart_time, postal=False):
             return result
 
         elif result['status'] == 'ZERO_RESULTS' and not postal:
-            # Retry using postal code
             return find_route(fr, to, depart_time, postal=True)
 
         elif result['status'] == 'OVER_QUERY_LIMIT':
@@ -140,6 +140,57 @@ def find_route(fr, to, depart_time, postal=False):
     if attempts == 3:
         logging.warning('Direction search limit reached')
         return None
+
+#def find_route(fr, to, depart_time, postal=False):
+#
+#    """find_route(fr, to, depart_time, postal=False) -- Return the json object of the found route
+#    Since we are only using Transit and no Waypoints, there will be only 1 route and within it, only 1 leg
+#    Hence, we can use index [0] to access the element
+#    """
+#    
+#    if postal:
+#        origin = fr.postal.encode('utf-8')
+#        destination = to.postal.encode('utf-8')
+#    else:
+#        origin = fr.address.encode('utf-8')
+#        destination = to.address.encode('utf-8')
+#     
+#    base_url = 'https://maps.googleapis.com/maps/api/directions/json'
+#    para =  {
+#                'origin'            : origin,
+#                'destination'       : destination,
+#                'mode'              :'transit',
+#                'departure_time'    : depart_time,
+#                'region'            : 'sg',
+#                'key'               : settings.API_KEY
+#            }
+#    
+#    attempts = 0
+#    success = False
+#    url = base_url + '?' + urllib.urlencode(para)
+#
+#    dt = datetime.datetime.fromtimestamp(depart_time)
+#    
+#    while success != True and attempts < 3:
+#        result = json.load(urllib.urlopen(url))
+#        attempts += 1
+#
+#        if result['status'] == 'OK':
+#            return result
+#
+#        elif result['status'] == 'ZERO_RESULTS' and not postal:
+#            # Retry using postal code
+#            return find_route(fr, to, depart_time, postal=True)
+#
+#        elif result['status'] == 'OVER_QUERY_LIMIT':
+#            time.sleep(1)
+#            # Retry
+#            continue
+#        success = True
+#
+#    if attempts == 3:
+#        logging.warning('Direction search limit reached')
+#        return None
 
 def dur(result):
     """Return timedelta object: the duration of the route, extracted from json information"""
@@ -156,10 +207,10 @@ def dur(result):
 # Tour is considered to be too early when the end time is before 10:00
 TIME_DELAY = 4 # hours
 def too_late(dt):
-    return dt.hour >= 22 or dt.hour <= 7
+    return dt.hour >= 22
 
 def too_early(dt):
-    return dt.hour < 10
+    return dt.hour < 12
 
 def num_of_tour(start_dt, end_dt):
     num = (end_dt.date() - start_dt.date()).days + 1
@@ -218,14 +269,15 @@ def generate_trip(start_dt, end_dt, hotel, pref='culture', pace='moderate'):
     places_dict = {place.key.id(): place for place in Place.query(ancestor=settings.DEFAULT_PARENT_KEY)}
     places_dict[0] = hotel
 
-    # Initialise some constants
-    tour_num = num_of_tour(start_dt, end_dt)
-    if tour_num == 0: return []
-    
+   
     # Initialise starting datetime and ending datetime according to TIME_DELAY
     start_dt = start_dt + datetime.timedelta(hours=TIME_DELAY)
     end_dt = end_dt - datetime.timedelta(hours=TIME_DELAY)
 
+    # Find number of tour after adjustment
+    tour_num = num_of_tour(start_dt, end_dt)
+    if tour_num == 0: return []
+ 
     # Number of places
     N = len(places_dict)
     # Biggest possible gain -> max column
@@ -238,21 +290,26 @@ def generate_trip(start_dt, end_dt, hotel, pref='culture', pace='moderate'):
     trip = [[] for i in xrange(tour_num)] 
     trip_json = {"trip":[]}
     # If start_dt is too late. Start tour on the next date.
-    tour_start_dt = too_late(start_dt) and start_dt + datetime.timedelta(days=1) or start_dt 
     
+    if too_late(start_dt):
+        tour_start_dt = start_dt.replace(hour=settings.TOUR_START_TIME.hour,            \
+                                         minute=settings.TOUR_START_TIME.minute)        \
+                                         + datetime.timedelta(days=1)
+    else:
+        tour_start_dt = max(start_dt.replace(hour=settings.TOUR_START_TIME.hour,        \
+                                             minute=settings.TOUR_START_TIME.minute),   \
+                            start_dt)
+    
+    tour_end_dt = tour_start_dt + datetime.timedelta(days=tour_num);
+
     # Main for loop
     for n in xrange(tour_num):
         L = [[{} for j in xrange(S+1)]]
         P = [[{} for j in xrange(S+1)]] # Store the route json returned from query
         
-        # Initialise tour. If tour not too late, then start with time in start_dt. Otherwise start at 
-        # settings.TOUR_START_TIME(datetime.time)
-        tour_start_dt += datetime.timedelta(days=n) # If how much tour_start_dt is away from the actual start
         if (tour_start_dt > start_dt): # When tour starts the next day
             tour_start_dt = tour_start_dt.replace(hour=settings.TOUR_START_TIME.hour, \
                                                   minute=settings.TOUR_START_TIME.minute)
-        else:
-            pass # Just let tour_start_dt to have the info from start_dt on the 0 day
 
         base_dt = tour_start_dt.replace(hour=0,minute=0) # Setting base datetime for calculation
 
@@ -265,7 +322,7 @@ def generate_trip(start_dt, end_dt, hotel, pref='culture', pace='moderate'):
         i = 0
         cutoff = None
         cutoff_dt = base_dt + time_to_td(settings.TOUR_CUTOFF_TIME)
-
+        
         # Loop to find a tour
         while i < len(L) and reduce(lambda x, y: x or y, L[i]):
             for j in (j for j in xrange(S + 1) if L[i][j]):
@@ -277,7 +334,8 @@ def generate_trip(start_dt, end_dt, hotel, pref='culture', pace='moderate'):
                             
                             # Depart time in UNIX time
                             # If depart time is too late then call it a day
-                            depart_dt = dt + process(v, pace)
+                            depart_dt = dt + process(u, pace)
+
                             if not too_late(depart_dt):
                                 route = find_route(v, u, dt_to_epoch(depart_dt))
                                 duration_td = dur(route)
@@ -311,6 +369,9 @@ def generate_trip(start_dt, end_dt, hotel, pref='culture', pace='moderate'):
                                         P[i+1][gain_idx][u_id] = (v_id, j)
             i += 1
         #--- End of while loop ---
+
+        # Increment tour_start_dt for the next tour
+        tour_start_dt += datetime.timedelta(days=1) # Increment this dt by 1 day each iteration
         
         # Assign the whole tour to trip. Add to trip_visited
         row = -1
@@ -318,9 +379,8 @@ def generate_trip(start_dt, end_dt, hotel, pref='culture', pace='moderate'):
         last_cell = L[row][col]
         v_id = min(last_cell, key=last_cell.get) # Place id of the last cell
         dt = last_cell[v_id][0] # dt of the last place
-        
         while v_id is not None:
-            trip[n].append((places_dict[v_id].to_dict(), dt_to_epoch(dt) * 1000))
+            trip[n].append([places_dict[v_id].to_dict(), dt_to_epoch(dt) * 1000])
             trip_visited.add(v_id)
             v_id, col = P[row][col][v_id]
             row -= 1
@@ -336,4 +396,46 @@ def generate_trip(start_dt, end_dt, hotel, pref='culture', pace='moderate'):
         # End of for loop
     # Do stuff here to generate back the trip or simply pass trip to jinja2 to generate.
     return trip
+
+def getGeocode(target, postal=False):
+    address = None;
+    if isinstance(target, Place) or isinstance(target, Hotel):
+        if postal:
+            address = target.postal
+        else:
+            address = target.address
+    else:
+        address = target
+
+    parameter = {
+            'address': address.encode('utf-8'),
+            'region': 'SG',
+            'key': settings.API_KEY
+            }
+    url = 'https://maps.googleapis.com/maps/api/geocode/json?%s' % urllib.urlencode(parameter)
+    logging.info('Geocode url: %s' % url)
+    attempts = 0
+    success = False
+    while not success and attempts < 3:
+        response = json.load(urllib.urlopen(url))
+        attempts += 1
+
+        if response['status'] == 'OK':
+            result = response['results'][0]['geometry']['location']
+            result = "%s,%s" % (result['lat'], result['lng'])
+            return result
+        elif response['status'] == 'ZERO_RESULTS' and not postal:
+            return getGeocode(target, postal=True)
+        elif response['status'] == 'OVER_QUERY_LIMIT':
+            time.sleep(1)
+            continue
+        success = True
+
+    if attempts == 3:
+        logging.info('Geocoding queries exceed daily limits')
+        return None
+
+
+
+
 
