@@ -12,6 +12,7 @@ h2 {
 	font-weight: bold;
 }
 
+/* Google Map */
 #map_canvas {
     /*
 		width: 660px;
@@ -21,6 +22,7 @@ h2 {
 		height: 800px;
 }
 
+/* Pace selection */
 #selectable_pace .ui-selecting { 
     background: #FECA40; 
 }
@@ -51,6 +53,7 @@ h2 {
     cursor:pointer;
 }
 
+/* Preference selection */
 #selectable_preference .ui-selecting { 
     background: #FECA40; 
 }
@@ -92,3 +95,16 @@ h2 {
 .ui-timepicker-rtl dl { text-align: right; padding: 0 5px 0 0; }
 .ui-timepicker-rtl dl dt{ float: right; clear: right; }
 .ui-timepicker-rtl dl dd { margin: 0 45% 10px 10px; }
+
+/* Tooltip */
+label {
+    display: inline-block; 
+}
+
+fieldset div {
+    margin-bottom: 2em;
+}
+
+.ui-tooltip {
+    width: 210px;
+}

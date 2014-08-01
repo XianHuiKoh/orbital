@@ -19,8 +19,10 @@
 		</div>
 		<hr>
 		<div class="text-center">
+			<label for="generate" title="Have you filled in all fields required in the 'Date & Time', 'Budget', 'Preference' and 'Miscellaneous' tabs? If yes, click on the button!">
 			<button type="button" class="btn btn-success btn-lg" id="generate_button" data-loading-text="Hooray!!!" type="submit">
 				Generate Trip</button>
+			</label>
 		</div>
 	</div>
 	<div class="col-md-4">
@@ -36,18 +38,22 @@
 			<div class="tab-pane" id="date">
 				<h2>Date &amp; Time</h2>
 				<form action='/yourtrip' method='post'>
-					<div class="form-group">
-						<p>From:</p>
-						<input type="text" id="start_datepicker" name="start_datetime" class="form-control"/>
-					</div>
-					<div class="form-group">
-						<p>To:</p>
-						<input type="text" id="end_datepicker" name="end_datetime" class="form-control"/>
-					</div>
-					<p>Duration (in days):</p>
-					<input id="inputDuration" class="form-control" type="number" name="duration" readonly>
+					<fieldset>
+						<div class="form-group">
+							<label for="from">From:</label>
+							<input type="text" id="start_datepicker" name="start_datetime" class="form-control" title="Please click to select your respective start date and time of your tour from the calendar input."/>
+						</div>
+						<div class="form-group">
+							<label for="to">To:</label>
+							<input type="text" id="end_datepicker" name="end_datetime" class="form-control" title="Please click to select your respective end date and time of your tour from the calendar input."/>
+						</div>
+						<div>
+							<label for="duration">Duration (in days):</label>
+							<input id="inputDuration" class="form-control" type="number" name="duration" readonly title="This is the calculated days of your tour here in Singapore. Your ideal schedule will be generated for you based on the duration of your stay here. Proceed by clicking on the 'Budget' tab.">
+						</div>
+					</fieldset>
 					<!--/form-->
-				</div>
+			</div>
 
 				<!-- Budget -->
 				<div class="tab-pane" id="budget">
@@ -56,29 +62,29 @@
 						<label for="lodging">Lodging:</label>
 						<input type="text" id="lodging" class="slider-val">
 					</p>
-					<div id="slider-lodging"></div>
+					<div id="slider-lodging" title="Please slide to select your assigned budget for lodging purposes."></div>
 					<p>
 
 						<label for="fb">Food and Beverage:</label>
 						<input type="text" id="fb" class="slider-val">
 					</p>
-					<div id="slider-fb"></div>
+					<div id="slider-fb" title="Please slide to select your assigned budget for food and beverages purposes. (*remember to set aside some budget for trying our local fruit, the durian!*)"></div>
 					<p>
 						<label for="shopping">Shopping:</label>
 						<input type="text" id="shopping" class="slider-val">
 					</p>
-					<div id="slider-shopping"></div>
+					<div id="slider-shopping" title="Please slide to select your assigned budget for shopping purposes, where you will shop till you drop."></div>
 					<p>
 						<label for="misc">Miscellaneous:</label>
 						<input type="text" id="misc" class="slider-val">
 					</p>
-					<div id="slider-misc"></div>
+					<div id="slider-misc" title="Please slide to select your assigned budget for miscellaneous purposes."></div>
 
 					<br>
 					<div class="text-center">
 						<h3>
 							<strong>
-								<p><u>Total</u></p>
+								<label for="total"><u  title="This is your overall calculated budget required for your whole trip here. Proceed by clicking on the 'Preference' tab.">Total</u></label>
 								<p>$<span id='total-budget'></span></p>
 							</strong>
 						</h3>
@@ -88,26 +94,24 @@
 				<!-- Preference -->
 				<div class="tab-pane" id="preference">
 					<h2>Preference</h2>
-					<p>Pace:
+					<p><label for="pace" title="Please select your desired pace for your designed tour.">Pace:</label></p>
 						<ol id="selectable_pace">
-							<li class="ui-widget-content">Slow</li>
-							<li class="ui-widget-content">Moderate</li>
-							<li class="ui-widget-content">Fast</li>
-							<li class="ui-widget-content">Hectic</li>
+							<li class="ui-widget-content" title="This is the slow pace where you can relax and take your own time enjoying the whole tour. Suitable for tourists who come here with a purpose of releasing stress or for a holiday.">Slow</li>
+							<li class="ui-widget-content" title="This is the moderate pace, A.K.A, the just-nice pace.">Moderate</li>
+							<li class="ui-widget-content" title="This is the fast pace, the'kan cheong (Singlish for urgent)' pace.">Fast</li>
+							<li class="ui-widget-content" title="This is the hectic pace.">Hectic</li>
 						</ol>
 						<input id="pace_input" name="pace_input" type="hidden">			
-					</p>
-					<p>Style:
+					<p><label for="preference" title="Please select your preference for your designed tour.">Style:</label></p>
 						<ol id="selectable_preference">
-							<li class="ui-widget-content">Nature</li>
-							<li class="ui-widget-content">Shopping</li>
-							<li class="ui-widget-content">Culture</li>
-							<li class="ui-widget-content">Family</li>
-							<li class="ui-widget-content">Romance</li>
-							<li class="ui-widget-content">Food</li>
+							<li class="ui-widget-content" title="The 'Nature' option, where you will see Singapore's most beautiful greenery and flowers.">Nature</li>
+							<li class="ui-widget-content"title="The 'Shopping' option, where you will be able to shop as much as you like.">Shopping</li>
+							<li class="ui-widget-content" title="The 'Culture' option, where you can explore and understand more about Singapore's culture.">Culture</li>
+							<li class="ui-widget-content" title="The 'Family' option, where you can spend time bonding your family together.">Family</li>
+							<li class="ui-widget-content" title="The 'Romance' option, where you can spend time together with your loved one.">Romance</li>
+							<li class="ui-widget-content" title="The 'Food' option, where you can enjoy all the delicacies here in Singapre.">Food</li>
 						</ol>
 						<input id="preference_input" type="hidden" name="preference_input">
-					</p>
 				</div>
 
 				<!-- Miscellaneous -->
@@ -117,7 +121,7 @@
 					<br>
 					<div class="checkbox">
 						<label>
-							<input type="checkbox" value="T" name="handicapped"> Travelling with handicapped individuals. 
+							<input type="checkbox" value="T" name="handicapped" title="Tick if you are travelling with handicapped individuals to generate a handicapped friendly tour."> Travelling with handicapped individuals. 
 						</label>
 					</div>
 					
@@ -125,7 +129,7 @@
 					
 					<div class="checkbox">
 						<label>
-							<input type="checkbox" value="T" name="elderlies"> Travelling with elderlies. 
+							<input type="checkbox" value="T" name="elderlies" title="Tick if you are travelling with elderlies to generate a tour suitable for elderlies. "> Travelling with elderlies. 
 						</label>
 					</div>
 
@@ -133,7 +137,7 @@
 
 					<div class="checkbox">
 						<label>
-							<input type="checkbox" value="T" name="infants"> Travelling with infants. 
+							<input type="checkbox" value="T" name="infants" title="Tick if you are travelling with infants to generate a tour suitable for infants."> Travelling with infants. 
 						</label>
 					</div>
 
@@ -141,7 +145,7 @@
 
 					<div class="checkbox">
 						<label>
-							<input type="checkbox" value="T" name="children"> Travelling with children. 
+							<input type="checkbox" value="T" name="children" title="Tick if you are travelling with children to generate a tour that is friendly for children."> Travelling with children. 
 						</label>
 					</div>
 				</form>
