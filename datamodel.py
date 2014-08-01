@@ -38,6 +38,8 @@ class Place(ndb.Model):
     desc            = ndb.TextProperty()
     address         = ndb.StringProperty()
     postal          = ndb.StringProperty()
+    geocode         = ndb.StringProperty()
+
     popularity      = ndb.FloatProperty()
     image           = ndb.StringProperty()
     loc_type        = ndb.StringProperty()
@@ -61,18 +63,7 @@ class Place(ndb.Model):
     children        = ndb.BooleanProperty()
     infants         = ndb.BooleanProperty()
     elderlies       = ndb.BooleanProperty()
-
-    # Maybe redundant
-    def to_minute(self, time):
-        if time:
-            hour, minute = (int(d) for d in time.split(':'))
-            # Data check
-            if hour in xrange(24) and minute in xrange(60):
-                return hour * 60 + minute
-            else:
-                print 'Warning: invalid format for time'
-        else:
-            return 0
+    
 
 class Hotel(ndb.Model):
     """Datastore model to store Hotel
@@ -81,7 +72,8 @@ class Hotel(ndb.Model):
     desc            = ndb.TextProperty()
     address         = ndb.StringProperty()
     postal          = ndb.StringProperty()
-    
+    geocode         = ndb.StringProperty()
+
     image           = ndb.StringProperty()
     duration        = ndb.StringProperty()
     opening         = ndb.StringProperty()
@@ -91,6 +83,10 @@ class Distance(ndb.Model):
     """Model to store distance (in seconds) (through TRANSIT)"""
     from_id         = ndb.IntegerProperty()
     to_id           = ndb.IntegerProperty()
+    
+    from_geocode    = ndb.StringProperty()
+    to_geocode      = ndb.StringProperty()
+
     from_postal     = ndb.StringProperty()
     to_postal       = ndb.StringProperty()
 
