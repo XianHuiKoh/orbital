@@ -188,6 +188,15 @@ $(document).ready(function() {
 	$("#generate_button").click(function(){
 		$('form').submit();
 	});
+
+	// Tooltip
+    var tooltips = $( "[title]" ).tooltip({
+      position: {
+        my: "left top",
+        at: "right+5 top-5"
+      }
+    });
+
 	// Singapore map
 	function initialize() {
   		var myLatlng = new google.maps.LatLng(1.3400,103.8100);

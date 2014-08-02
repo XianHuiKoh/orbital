@@ -97,6 +97,8 @@ class PlaceEntry(webapp2.RequestHandler):
         place.infants           = bool(self.request.get('infants'))
         place.elderlies         = bool(self.request.get('elderlies'))
         
+        place.geocode = algorithm.getGeocode(place)
+        
         # Store the place no matter what
         place.put()
 
@@ -237,6 +239,12 @@ class Contact(webapp2.RequestHandler):
     def get(self):
         self.show()    
         
+class Attraction(webapp2.RequestHandler):
+    def get(self):
+        template = jinja_environment.get_template("attraction.html")
+        template_values = {}
+        self.response.write(template.render(template_values))
+
 app = webapp2.WSGIApplication([
         ('/', MainHandler),
         ('/planner', Planner),
