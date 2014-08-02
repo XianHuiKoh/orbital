@@ -207,7 +207,7 @@ def dur(result):
 # Tour is considered to be too early when the end time is before 10:00
 TIME_DELAY = 4 # hours
 def too_late(dt):
-    return dt.hour >= 22
+    return dt.hour >= 22 or dt.hour <= 6
 
 def too_early(dt):
     return dt.hour < 12
@@ -291,7 +291,7 @@ def generate_trip(start_dt, end_dt, hotel, pref='culture', pace='moderate'):
     trip_json = {"trip":[]}
     # If start_dt is too late. Start tour on the next date.
     
-    if too_late(start_dt):
+    if start_dt.hour >= 22:
         tour_start_dt = start_dt.replace(hour=settings.TOUR_START_TIME.hour,            \
                                          minute=settings.TOUR_START_TIME.minute)        \
                                          + datetime.timedelta(days=1)
