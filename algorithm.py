@@ -20,11 +20,11 @@ def memoized_route(func):
     # cache = {(p.from_id, p.to_id): p.duration_value for p in quer}
     logging.info((len(cache)))
     @wraps(func)
-    def wrap(fr, to, *args):
+    def wrap(fr, to, depart_time, postal=False):
         k = (fr.geocode, to.geocode)
         if k not in cache:
             logging.info("Not cached-------------") 
-            route = func(fr, to, *args)
+            route = func(fr, to, depart_time, postal)
             duration = route['routes'][0]['legs'][0]['duration']
             dur_val = duration['value']
             dur_text = duration['text']
