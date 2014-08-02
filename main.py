@@ -167,12 +167,17 @@ class YourTrip(webapp2.RequestHandler):
         # the initerary along as template_values for displaying.
         
         trip = algorithm.generate_trip(start_datetime, end_datetime, hotel, preference, pace)
+        tripOptions =   {
+                            "preference": preference,
+                            "pace": pace
+                        }
         #initerary = find_route()
         template_values = {
             'trip': trip,
             'tourNum': len(trip),
             'startDate': start_dt,
-            'endDate': end_dt
+            'endDate': end_dt,
+            'tripOptions': tripOptions
         }
         self.show(template_values)
 

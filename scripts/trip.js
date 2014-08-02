@@ -7,6 +7,7 @@ $(document).ready(function() {
 	var currentTour;
 	//var tourNum;
 	//var wholeTrip;
+	//var tripOptions;
 	var markers = [];
 	var defaultCenter = new google.maps.LatLng(1.3400,103.8100);
 	var defaultZoom = 11;
@@ -53,21 +54,25 @@ $(document).ready(function() {
 		txt = txt.split(":");
 		var hours = txt[0];
 		var mins = txt[1];
-		return (parseInt(hours) * 3600 + parseInt(mins) * 60) * 1000;
+		var pace = {"slow": 1.5, "moderate": 1.0, "fast": 0.75, "hectic": 0.5};
+		return Math.round((parseInt(hours) * 3600 + parseInt(mins) * 60) * 1000 * pace[tripOptions.pace]);
 	}
 
 	function millisecondsToTxt(millsecs) {
 		var secs = Math.round(millsecs / 1000);
 		var h = Math.floor(secs / 3600);
 		var m = Math.ceil((secs % 3600) / 60) ;
-
+		console.log("Secs: " + secs);
+		console.log("Hours: " + h);
+		console.log("Minutes: " + m);
 		var result = "";
+
 		if (h > 1) {
 			result = result + h + " hrs ";
 		} else if (h == 1) {
 			result = result + h + " hr ";
 		}
-
+		
 		if (m > 1) {
 			result = result + m + " mins ";
 		} else if (m == 1) {
@@ -87,7 +92,6 @@ $(document).ready(function() {
 		for (var i = 0; i < wholeTrip.length; i++) {
 			var tour = wholeTrip[i][0];
 			var cutoff = wholeTrip[i][1];
-			console.log(cutoff);
 			var $tour = $("#tour"+i);
 			//$tour.css("visibility", "hidden");
 
@@ -110,10 +114,8 @@ $(document).ready(function() {
 				
 				var context;
 				var travel_time = to_time - fr_time - strToMilliseconds(to.duration);
+				console.log("Travel Time: " + from.name + " to " + to.name + ": "+travel_time);
 
-				console.log("Place number: " + j);
-				
-				
 				if (j == 0) {
 					context = "hotel";
 					$tour.append(createPanel(context, from, to, fr_time, travel_time));
@@ -149,8 +151,17 @@ $(document).ready(function() {
 		var obj;
 		var timing = "";
 		var arrival_dt;
+		
+		function pad(n, width, z){
+			z = z || "0";
+			n = n + "";
+			return (n.length >= width) ? n : new Array(width - n.length + 1).join(z) + n; 
+		}
+		
+		function datetimeToTimeStr(dt) {
+			return "" + pad(dt.getHours(), 2) + ":" + pad(dt.getMinutes(), 2);
+		}
 
-		console.log(context);
 		if (context != "hotel") {
 			// Create travel link
 			var $travelLink = $("<a></a>", 
@@ -166,21 +177,21 @@ $(document).ready(function() {
 			$div.append($("<br/>"));
 			$div.append($travelLink);
 			$div.append($("<br/><br/>"));
-
 			
 			obj = to;
 			arrival_dt = new Date(depart_time + travel_time);
+			
 			timing = "From ";
-			timing = timing + arrival_dt.getHours() + ":" + arrival_dt.getMinutes();
+			timing = timing + datetimeToTimeStr(arrival_dt);
 			timing = timing + " to ";
 			
 			arrival_dt = new Date(arrival_dt.valueOf() + strToMilliseconds(obj.duration));
-			timing = timing + arrival_dt.getHours() + ":" + arrival_dt.getMinutes();
+			timing = timing + datetimeToTimeStr(arrival_dt);
 			
 		} else {
 			obj = from;
 			arrival_dt = new Date(depart_time);
-			timing = "Departure at " + arrival_dt.getHours() + ":" + arrival_dt.getMinutes();
+			timing = "Departure at " + datetimeToTimeStr(arrival_dt); 
 		}
 
 		// Create panel

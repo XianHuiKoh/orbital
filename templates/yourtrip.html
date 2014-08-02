@@ -48,6 +48,8 @@
 <script type="text/javascript" src="../jquery/jquery-ui-1.11.0.custom/jquery-ui-timepicker-addon.js"></script>
 <script type="text/javascript">
 	var wholeTrip = [];
+	var tripOptions = {{ tripOptions|tojson|safe }};
+	console.log(tripOptions);
 	var tourNum = {{ tourNum }};
 	{% for tour in trip %}
 		var tripData = [];
