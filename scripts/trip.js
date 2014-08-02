@@ -119,7 +119,7 @@ $(document).ready(function() {
 					$tour.append(createPanel(context, from, to, fr_time, travel_time));
 				} 
 				
-				context = (cutoff >= 0 && j > cutoff) ? "cut" : "place";
+				context = (cutoff >= 0 && j >= cutoff - 1) ? "cut" : "place";
 				$tour.append(createPanel(context, from, to, fr_time, travel_time));
 			}
 		}
