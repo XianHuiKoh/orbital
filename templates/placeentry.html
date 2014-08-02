@@ -9,9 +9,25 @@
 		<div class="container">
 
 			<div class="text-center"><h2> Place Entry </h2></div>
-			<form role="form" action="/placeentrymass" method='post'>
-				<button class="btn btn-lg btn-primary" type='submit'>Read from file !</button>
+			<form role="form-horizontal" action="/placeentrymass" method='post'>
+				<div class="form-group">
+					<label class="control-label col-xs-2" for="inputNumOfPlaces">Num of Places</label>
+					<div class="col-xs-8">
+						<input id="inputNumOfPlaces" class="form-control" type="number" name="numOfPlaces"></input>
+					</div>
+					<div class="col-xs-2">
+						<button class="btn btn-lg btn-primary" type='submit'>Read places from file !</button>
+					</div>
+				</div>
 			</form>
+			
+			<form action="/hotelentry" role="form" method="post">
+				<div class="text-center">
+					<button class="btn btn-lg btn-warning" type='submit'>Write hardcoded Hotel</button>
+				</div>
+			</form>
+
+			<hr>
 			<form class="form-horizontal" action='/placeentry' method='post'>
 				<div class="form-group">
 					<label class="control-label col-xs-2" for="inputName">Name</label>

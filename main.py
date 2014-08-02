@@ -181,7 +181,8 @@ class MassEntry(webapp2.RequestHandler):
     def post(self):
         with open('PlacesOfAttraction.json', 'r') as infile:
             data = json.load(infile)
-            for i in xrange(20):
+            numOfPlaces = int(self.request.get('numOfPlaces'))
+            for i in xrange(numOfPlaces):
                 d = data[i]
                 place = Place(parent=settings.DEFAULT_PARENT_KEY)
 
@@ -204,6 +205,22 @@ class MassEntry(webapp2.RequestHandler):
 
             infile.close()
             self.redirect('/placeentry')
+
+class HotelEntry(webapp2.RequestHandler):
+    def post(self):
+        hotel = Hotel(name="The Forest by Wangz",
+                      desc="Very nice hotel owned by Wangz, I guess",
+                      address="145A Moulmein Rd, Singapore 308108",
+                      postal="Singapore 308108",
+                      image="",
+                      duration="00:00",
+                      opening="00:00",
+                      closing="23:59")
+        hotel.geocode = algorithm.getGeocode(hotel)
+        logging.info(hotel.geocode)
+        hotel.put()
+        self.redirect('/placeentry')
+
 
 class Contact(webapp2.RequestHandler):
     def show(self, template_values=None):
@@ -252,5 +269,6 @@ app = webapp2.WSGIApplication([
         ('/placeentrymass', MassEntry),
         ('/yourtrip', YourTrip),
         ('/attraction', Attraction),
+        ('/hotelentry', HotelEntry),
         ('/contact', Contact)
 ], debug=True)
