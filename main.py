@@ -251,5 +251,6 @@ app = webapp2.WSGIApplication([
         ('/placeentry', PlaceEntry),
         ('/placeentrymass', MassEntry),
         ('/yourtrip', YourTrip),
+        ('/attraction', Attraction),
         ('/contact', Contact)
 ], debug=True)
