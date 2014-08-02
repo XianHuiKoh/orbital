@@ -137,8 +137,8 @@ class YourTrip(webapp2.RequestHandler):
         start_dt            = self.request.get('start_datetime')
         end_dt              = self.request.get('end_datetime')
         hotel               = self.request.get('hotel_option')
-        preference          = self.request.get('preference_input')
-        pace                = self.request.get('pace_input')
+        preference          = self.request.get('preference_input') || 'culture'
+        pace                = self.request.get('pace_input') || 'moderate'
         misc_pref           = self.request.get('misc_input')
         
         
