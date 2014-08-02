@@ -318,7 +318,7 @@ def generate_trip(start_dt, end_dt, hotel, pref='culture', pace='moderate'):
         P[0][0][0] = (None, None) # (id of previous place, column)
         
         i = 0
-        cutoff = None
+        cutoff = 0
         cutoff_dt = base_dt + time_to_td(settings.TOUR_CUTOFF_TIME)
         
         # Loop to find a tour
@@ -343,9 +343,9 @@ def generate_trip(start_dt, end_dt, hotel, pref='culture', pace='moderate'):
                                 if (dt_ <= base_dt + str_to_td(u.closing) + str_to_td(u.duration)
                                     and dt_ <= end_dt) :
                                     
-                                    # If dt_ passes the cutoff hour
-                                    if not cutoff and dt_ >= cutoff_dt:
-                                        cutoff = i
+                                    ## If dt_ passes the cutoff hour
+                                    #if not cutoff and dt_ >= cutoff_dt:
+                                    #    cutoff = i
                                     
                                     # Add another layer to L and P if i == len(L) - 1
                                     if i == len(L) - 1:
@@ -379,6 +379,9 @@ def generate_trip(start_dt, end_dt, hotel, pref='culture', pace='moderate'):
         v_id = min(last_cell, key=last_cell.get) # Place id of the last cell
         dt = last_cell[v_id][0] # dt of the last place
         while v_id is not None:
+            if dt <= cutoff_dt:
+                cutoff += 1
+
             trip[n].append([places_dict[v_id].to_dict(), dt_to_epoch(dt) * 1000])
             trip_visited.add(v_id)
             v_id, col = P[row][col][v_id]

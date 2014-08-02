@@ -54,7 +54,7 @@
 		var tripCutoff;
 
 		{% if tour[1] is not none %}
-			tripCutoff = ({{tour[1]}});
+		tripCutoff = ({{tour[1]}});
 		{% else %}
 			tripCutoff = -1;
 		{% endif %}
@@ -62,7 +62,7 @@
 			tripData.push([{{route[0]|tojson|safe}}, {{route[1]}}]);
 		{% endfor %}
 		wholeTrip.push([tripData, tripCutoff]);
-	{% endfor %}
+{% endfor %}
 </script>
 {% endblock %}
 
