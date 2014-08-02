@@ -3,9 +3,39 @@
 	height: 580px;
 }
 
-#tourDetails {
-	height: 580px;
+#tripWrapper {
+	position: relative;
+	height: 90%;
 	overflow: auto;
+}
+
+#wrapper {
+	position: relative;
+	height: 100%;
+}
+
+#directionPanel {
+	position: absolute;
+	top: 30px;
+	right: 10px;
+	width: 30%;
+	height: 91%;
+	background: white;
+	border: black;
+	border-width: 3px;
+}
+
+#displayPanel {
+	overflow: scroll;
+	position: relative;
+	height: 92%;
+}
+#displayPanelClose {
+	float: left;
+}
+#tourDetails {
+
+	height: 580px;
 }
 
 /*    

@@ -6,40 +6,63 @@
 {% endblock %}
 {% block content %}
 <div class="row-fluid">
-	<div class="col-md-4" id="tourDetails">	
-		<ul class="pager">
-			<li class="previous"><a href="#" id="prevDay">&larr;</a></li>
-			
-			<li class="next"><a href="#" id="nextDay">&rarr;</a></li>		
-		</ul>
-		{% for tour in trip %}
-		<div class="routes" id="route{{ loop.index }}">
-			<h1>Day {{ loop.index }}</h1>
-			{% for route in tour[0] %}
-			<script type="text/javascript">
-				var data = {{route[0]|tojson|safe}};
-				console.log(data.name);
-			</script>
-
-			<p><h3> Place No: {{ loop.index }} </h3></p>
-			<p> Name: {{route[0].name}} <br> Address: {{route[0].address}}</p>
-			<p> Starting time: {{route[1]}}</p>
-			<hr>
+	<div class="col-md-4">
+		<div class="panel panel-default" id="tourDetails">
+			<div class="panel-heading">
+				<h2 class="panel-title text-center">
+					<span>
+						<button class="btn btn-primary" id="prevButt">&laquo;</button>
+						<span id="tourHeader"></span>
+						<button id="nextButt" class="btn btn-primary">&raquo;</button>
+					</span>
+				</h2>
+			</div>
+			<div class="panel-body" id="tripWrapper">
+			{% for tour in trip %}
+				<div class="routes" id="tour{{ loop.index0 }}"></div>
 			{% endfor %}
+			</div>
 		</div>
-		{% endfor %}
 	</div>
-		
 	<div class="col-md-8">
+		<div id="wrapper">
 			<div id="map_canvas"></div>
-	</div>
+			
+			<div class="panel panel-default" id="directionPanel">
+				<div class="panel-heading">
+					<button id="displayPanelClose" type="button" class="close">&times;</button>
+					<h2 class="panel-title text-center">Directions</h2>
+				</div>
+				
+				<div class="panel-body" id="displayPanel">
+				</div>
 
-</div>
+			</div>
+		</div>
+	</div>
 </div>
 {% endblock %}
 
 {% block scripts %}
 <script type="text/javascript" src="../scripts/trip.js"></script>
 <script type="text/javascript" src="../jquery/jquery-ui-1.11.0.custom/jquery-ui-timepicker-addon.js"></script>
+<script type="text/javascript">
+	var wholeTrip = [];
+	var tourNum = {{ tourNum }};
+	{% for tour in trip %}
+		var tripData = [];
+		var tripCutoff;
+
+		{% if tour[1] is not none %}
+			tripCutoff = ({{tour[1]}});
+		{% else %}
+			tripCutoff = -1;
+		{% endif %}
+		{% for route in tour[0]%}
+			tripData.push([{{route[0]|tojson|safe}}, {{route[1]}}]);
+		{% endfor %}
+		wholeTrip.push([tripData, tripCutoff]);
+	{% endfor %}
+</script>
 {% endblock %}
 

@@ -20,13 +20,13 @@ import os
 import logging
 import settings
 import json
+import algorithm
 
 from google.appengine.ext import ndb
 from google.appengine.api import mail
 
 from datetime import datetime, date, time, timedelta
 from datamodel import *
-from algorithm import generate_trip
 
 def guess_autoescape(template_name):
     if template_name is None or '.' not in template_name:
@@ -132,8 +132,8 @@ class YourTrip(webapp2.RequestHandler):
         Then display the results accordingly.
         """
         # Taking parameter from the form
-        start_datetime      = self.request.get('start_datetime')
-        end_datetime        = self.request.get('end_datetime')
+        start_dt            = self.request.get('start_datetime')
+        end_dt              = self.request.get('end_datetime')
         hotel               = self.request.get('hotel_option')
         preference          = self.request.get('preference_input')
         pace                = self.request.get('pace_input')
@@ -141,17 +141,21 @@ class YourTrip(webapp2.RequestHandler):
         
         
         # Process parameter from form
-        start_datetime = datetime.strptime(start_datetime, '%d/%m/%Y %I:%M %p')
-        end_datetime = datetime.strptime(end_datetime, '%d/%m/%Y %I:%M %p')
+        start_datetime = datetime.strptime(start_dt, '%d/%m/%Y %I:%M %p')
+        end_datetime = datetime.strptime(end_dt, '%d/%m/%Y %I:%M %p')
         # TODO: Implement hotel option and reflect choice here
-        # hotel = Hotel(name="The Forest by Wangz",
-        #               desc="Very nice hotel owned by Wangz, I guess",
-        #               address="145A Moulmein Rd, Singapore 308108",
-        #               postal="Singapore 308108",
-        #               image="",
-        #               duration="00:00",
-        #               opening="00:00",
-        #               closing="23:59")
+        #hotel = Hotel(name="The Forest by Wangz",
+        #              desc="Very nice hotel owned by Wangz, I guess",
+        #              address="145A Moulmein Rd, Singapore 308108",
+        #              postal="Singapore 308108",
+        #              image="",
+        #              duration="00:00",
+        #              opening="00:00",
+        #              closing="23:59")
+        #hotel.geocode = algorithm.getGeocode(hotel)
+        #logging.info(hotel.geocode)
+        #hotel.put()
+        
         # Store the place
         qry = ndb.gql("SELECT * FROM Hotel WHERE name =	'The Forest by Wangz'")
         for i in qry:
@@ -160,11 +164,13 @@ class YourTrip(webapp2.RequestHandler):
         # Magic happens here. Then the magic will pass the complete list of
         # the initerary along as template_values for displaying.
         
-        trip = generate_trip(start_datetime, end_datetime, hotel, preference, pace)
-
+        trip = algorithm.generate_trip(start_datetime, end_datetime, hotel, preference, pace)
         #initerary = find_route()
         template_values = {
-            'trip': trip            
+            'trip': trip,
+            'tourNum': len(trip),
+            'startDate': start_dt,
+            'endDate': end_dt
         }
         self.show(template_values)
 
@@ -173,7 +179,7 @@ class MassEntry(webapp2.RequestHandler):
     def post(self):
         with open('PlacesOfAttraction.json', 'r') as infile:
             data = json.load(infile)
-            for i in xrange(15):
+            for i in xrange(20):
                 d = data[i]
                 place = Place(parent=settings.DEFAULT_PARENT_KEY)
 
@@ -189,6 +195,9 @@ class MassEntry(webapp2.RequestHandler):
                 place.morning = 0.25
                 place.afternoon = 0.25
                 place.evening = 0.25
+                
+                place.geocode = algorithm.getGeocode(place)
+
                 place.put()
 
             infile.close()
