@@ -87,7 +87,7 @@ $(document).ready(function() {
 		for (var i = 0; i < wholeTrip.length; i++) {
 			var tour = wholeTrip[i][0];
 			var cutoff = wholeTrip[i][1];
-			
+			console.log(cutoff);
 			var $tour = $("#tour"+i);
 			//$tour.css("visibility", "hidden");
 
@@ -101,6 +101,7 @@ $(document).ready(function() {
 			}
 
 			// CreatePanel for hotel
+			// Render once for hotel
 			for (var j = 0; j < tour.length - 1; j++) {
 				var from				= tour[j][0];
 				var fr_time			= tour[j][1];
@@ -109,11 +110,16 @@ $(document).ready(function() {
 				
 				var context;
 				var travel_time = to_time - fr_time - strToMilliseconds(to.duration);
-				if (j > 0) {
-					context = (cutoff >= 0 && j > cutoff) ? "cut" : "place";
-				} else {
+
+				console.log("Place number: " + j);
+				
+				
+				if (j == 0) {
 					context = "hotel";
-				}
+					$tour.append(createPanel(context, from, to, fr_time, travel_time));
+				} 
+				
+				context = (cutoff >= 0 && j > cutoff) ? "cut" : "place";
 				$tour.append(createPanel(context, from, to, fr_time, travel_time));
 			}
 		}
@@ -127,7 +133,7 @@ $(document).ready(function() {
 		}
 		$("#prevButt").attr("disabled", true);
 	}
-	
+		
 	function createPanel(context, from, to, depart_time, travel_time) {
 		var wrapper;
 		switch(context) {
@@ -143,6 +149,8 @@ $(document).ready(function() {
 		var obj;
 		var timing = "";
 		var arrival_dt;
+
+		console.log(context);
 		if (context != "hotel") {
 			// Create travel link
 			var $travelLink = $("<a></a>", 
