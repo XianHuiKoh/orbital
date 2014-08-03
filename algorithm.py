@@ -217,9 +217,8 @@ def find_route(fr, to, depart_time, dist_dict, postal=False):
             continue
         success = True
 
-    if attempts == 3:
-        logging.warning('Direction search limit reached')
-        return 9999999
+    logging.warning('Direction search limit reached')
+    return 9999999
 
 def dur(num):
     return datetime.timedelta(seconds = num)
