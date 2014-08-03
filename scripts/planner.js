@@ -74,6 +74,7 @@ $(document).ready(function() {
 		}
 	});
 	
+	/*
 	// Implementing sliders for budgets
 	$("#slider-lodging").slider({
 		range: "min",
@@ -164,6 +165,82 @@ $(document).ready(function() {
 		$('#slider-' + $(this).attr('id')).slider('value', parseInt(value));
 		update_budget();
 	});
+*/
+		// Budget Slider
+		// ==========================================================================
+		var handlers = [25, 50, 75];
+		console.log(rgb2hex($("#lodging").css("backgroundColor")));
+    var colors = [
+										rgb2hex($("#lodginglbl").css("color")),
+										rgb2hex($("#foodlbl").css("color")),
+										rgb2hex($("#shoppinglbl").css("color")),
+										rgb2hex($("#misclbl").css("color"))
+									];
+    updateColors(handlers);
+		var minWidth = 2;
+		var maxVal = 100;
+    $("#totalBudget").change(function(){
+			updateBudget(handlers);
+		});
+		
+		$("#budgetSlider").slider({
+        min: 0,
+        max: maxVal,
+        values: handlers,
+        slide: function (evt, ui) {
+					for (var i=0, l=ui.values.length; i < l; i++){
+						if (i !== l - 1 && ui.values[i] > ui.values[i + 1] - minWidth) {
+							return false;
+            } else if (i === 0 && ui.values[i] < ui.values[i - 1] + minWidth){
+							console.log("This should never happen");
+							return false;
+						} else if (i === 0 && ui.values[i] < minWidth) {
+							return false;
+            } else if (i === l - 1 && ui.values[i] > maxVal - minWidth) {
+							return false;
+						}
+					}
+					updateColors(ui.values);
+					updateBudget(ui.values);
+        },
+				stop: function(event, ui) {
+					updateBudget(ui.values);	
+				}
+    });
+		
+		function updateBudget(values) {
+			var budget = $("#totalBudget").val();
+			console.log(budget);
+			if (budget) {
+				var vals = [];
+				var res = [0]; res = res.concat(values); res.push(maxVal);
+				console.log(res);
+				for (var i = 0; i < res.length - 1; i++) {
+					vals.push(Math.round((res[i+1] - res[i]) * budget / 100));
+				}
+				console.log(values);	
+				console.log(vals);
+				// Update budget with rounding.
+				$("#lodging").val(vals[0]);
+				$("#food").val(vals[1]);
+				$("#shopping").val(vals[2]);
+				$("#misc").val(vals[3]);
+			}
+		}
+    function updateColors(values) {
+        var colorstops = colors[0] + ", "; // start left with the first color
+            for (var i=0, l = values.length; i< l; i++) {
+								colorstops += colors[i] + " " + values[i] + "%,";
+								colorstops += colors[i+1] + " " + values[i] + "%,";
+            }
+            // end with the last color to the right
+            colorstops += colors[colors.length-1];
+
+            /* Safari 5.1, Chrome 10+ */
+            var css = '-webkit-linear-gradient(left,' + colorstops + ')';
+            $('#budgetSlider').css('background-image', css);
+    }
+  //====================================================================================
 
 	// Selects the desired pace
 	$( "#selectable_pace" ).selectable({
@@ -286,7 +363,15 @@ $(document).ready(function() {
       		animation: google.maps.Animation.DROP
   		});
 	}
+	
+	function rgb2hex(rgb) {
+    if (/^#[0-9A-F]{6}$/i.test(rgb)) return rgb;
 
-
+    rgb = rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
+    function hex(x) {
+        return ("0" + parseInt(x).toString(16)).slice(-2);
+    }
+    return "#" + hex(rgb[1]) + hex(rgb[2]) + hex(rgb[3]);
+	}
 	initialize();
 });

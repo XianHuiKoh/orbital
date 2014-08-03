@@ -2,6 +2,7 @@
 {% extends "base.html" %}
 {% block title %}Planner{% endblock %}
 {% block links %}
+<link type="text/css" rel="stylesheet" href="../stylesheets/planner.css">
 {% endblock %}
 
 {% block content %}
@@ -37,7 +38,7 @@
 			<!-- Date and Time -->
 			<div class="tab-pane" id="date">
 				<h2>Date &amp; Time</h2>
-				<form action='/yourtrip' method='post'>
+				<form class="form-horizontal" action='/yourtrip' method='post'>
 					<fieldset>
 						<div class="form-group">
 							<label for="from">From:</label>
@@ -58,39 +59,68 @@
 				<!-- Budget -->
 				<div class="tab-pane" id="budget">
 					<h2>Budget</h2>
-					<p>
-						<label for="lodging">Lodging:</label>
-						<input type="text" id="lodging" class="slider-val">
-					</p>
-					<div id="slider-lodging" title="Please slide to select your assigned budget for lodging purposes."></div>
-					<p>
-
-						<label for="fb">Food and Beverage:</label>
-						<input type="text" id="fb" class="slider-val">
-					</p>
-					<div id="slider-fb" title="Please slide to select your assigned budget for food and beverages purposes. (*remember to set aside some budget for trying our local fruit, the durian!*)"></div>
-					<p>
-						<label for="shopping">Shopping:</label>
-						<input type="text" id="shopping" class="slider-val">
-					</p>
-					<div id="slider-shopping" title="Please slide to select your assigned budget for shopping purposes, where you will shop till you drop."></div>
-					<p>
-						<label for="misc">Miscellaneous:</label>
-						<input type="text" id="misc" class="slider-val">
-					</p>
-					<div id="slider-misc" title="Please slide to select your assigned budget for miscellaneous purposes."></div>
-
-					<br>
 					<div class="text-center">
-						<h3>
-							<strong>
-								<label for="total"><u  title="This is your overall calculated budget required for your whole trip here. Proceed by clicking on the 'Preference' tab.">Total</u></label>
-								<p>$<span id='total-budget'></span></p>
+						<h4>
+							<strong><label class="control-label" for="totalBudget" title="This is your overall calculated budget required for your whole trip here. Proceed by clicking on the 'Preference' tab.">Total Budget</label>
+								<hr>
+								<div class="input-group">
+									<div class="input-group-addon">$</div>
+									<input id="totalBudget" type="number" class="form-control text-center" min="4">
+								</div>
 							</strong>
-						</h3>
+						</h4>
+						<div id="budgetSlider"></div>
 					</div>
-				</div>
 
+					<hr>
+
+					<div class="form-group">				
+						<label id="lodginglbl" class="control-label col-xs-4" for="lodging" title="Please slide to select your assigned budget for lodging purposes.">Lodging:</label>
+						<div class="col-xs-8">
+							<div class="input-group">
+								<div class="input-group-addon">$</div>
+								<input id="lodging" class="form-control text-right" readonly>
+							</div>
+						</div>
+					</div>
+					
+					<hr>
+
+					<div class="form-group">				
+						<label id="foodlbl" class="control-label col-xs-4" for="food" title="Please slide to select your assigned budget for lodging purposes.">Food:</label>
+						<div class="col-xs-8">
+							<div class="input-group">
+								<div class="input-group-addon">$</div>
+								<input id="food" class="form-control text-right" readonly>
+							</div>
+						</div>
+					</div>
+
+					<hr>
+
+					<div class="form-group">				
+						<label id="shoppinglbl" class="control-label col-xs-4" for="shopping" title="Please slide to select your assigned budget for lodging purposes.">Shopping:</label>
+						<div class="col-xs-8">
+							<div class="input-group">
+								<div class="input-group-addon">$</div>
+								<input id="shopping" class="form-control text-right" readonly>
+							</div>
+						</div>
+					</div>
+
+					<div class="form-group">				
+						<label id="misclbl" class="control-label col-xs-4" for="misc" title="Please slide to select your assigned budget for lodging purposes.">Miscellaneous:</label>
+						<div class="col-xs-8">
+							<div class="input-group">
+								<div class="input-group-addon">$</div>
+								<input id="misc" class="form-control text-right" readonly>
+							</div>
+						</div>
+					</div>
+
+				</div>
+				
+				
 				<!-- Preference -->
 				<div class="tab-pane" id="preference">
 					<h2>Preference</h2>

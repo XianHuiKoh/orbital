@@ -166,7 +166,7 @@ $(document).ready(function() {
 			// Create travel link
 			var $travelLink = $("<a></a>", 
 					{
-						text: "By public transport: " + millisecondsToTxt(travel_time),
+						text: "Travel Time: " + millisecondsToTxt(travel_time),
 						click: function() {
 							// Render tour and display
 							var request = $(this).data("request");

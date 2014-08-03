@@ -1,17 +1,22 @@
-p > input {
-	border:0;
-	font-weight:bold;
-}
-
-p {
-	margin-top: 20px;
-}
 
 h2 {
 	font-family: sans-serif;
 	font-weight: bold;
 }
 
+
+#lodginglbl{
+	color: #CC0052;
+}
+#foodlbl {
+	color: #005200;
+}
+#shoppinglbl {
+	color: #002E73;
+}
+#misclbl {
+	color: #6B2400;
+}
 /* Google Map */
 #map_canvas {
     /*
@@ -108,3 +113,4 @@ fieldset div {
 .ui-tooltip {
     width: 210px;
 }
+
