@@ -94,12 +94,72 @@ def process(place, pace='moderate'):
     d = datetime.timedelta(seconds=d.total_seconds() * locals()[pace])
     return d
 
-@memoized_route
-def find_route(fr, to, depart_time, postal=False):
+#@memoized_route
+#def find_route2(fr, to, depart_time, postal=False):
+#    """find_route(fr, to, depart_time, postal=False) -- Return the json object of the found route
+#    Since we are only using Transit and no Waypoints, there will be only 1 route and within it, only 1 leg
+#    Hence, we can use index [0] to access the element
+#    """
+#    if not postal:
+#        origin = fr.geocode
+#        destination = to.geocode
+#    else:
+#        origin = fr.postal
+#        destination = to.postal
+#     
+#    base_url = 'https://maps.googleapis.com/maps/api/directions/json'
+#    para =  {
+#                'origin'            : origin,
+#                'destination'       : destination,
+#                'mode'              :'transit',
+#                'departure_time'    : depart_time,
+#                'region'            : 'sg',
+#                'key'               : settings.API_KEY
+#            }
+#    
+#    attempts = 0
+#    success = False
+#    url = base_url + '?' + urllib.urlencode(para)
+#    logging.info(url)
+#    while success != True and attempts < 3:
+#        result = json.load(urllib.urlopen(url))
+#        attempts += 1
+#
+#        if result['status'] == 'OK':
+#            return result
+#
+#        elif result['status'] == 'ZERO_RESULTS' and not postal:
+#            return find_route(fr, to, depart_time, postal=True)
+#
+#        elif result['status'] == 'OVER_QUERY_LIMIT':
+#            time.sleep(3)
+#            # Retry
+#            continue
+#        success = True
+#
+#    if attempts == 3:
+#        logging.warning('Direction search limit reached')
+#        return None
+#
+#def dur(result):
+#    """Return timedelta object: the duration of the route, extracted from json information"""
+#    if (type(result) is not int):
+#        result = result['routes'][0]['legs'][0]['duration']['value']
+#
+#    return datetime.timedelta(seconds=result)
+
+
+def find_route(fr, to, depart_time, dist_dict, postal=False):
     """find_route(fr, to, depart_time, postal=False) -- Return the json object of the found route
     Since we are only using Transit and no Waypoints, there will be only 1 route and within it, only 1 leg
     Hence, we can use index [0] to access the element
     """
+
+    key = (fr.geocode, to.geocode)
+    if key in dist_dict:
+        return dist_dict[key]
+    
+    # Otherwise
     if not postal:
         origin = fr.geocode
         destination = to.geocode
@@ -120,16 +180,36 @@ def find_route(fr, to, depart_time, postal=False):
     attempts = 0
     success = False
     url = base_url + '?' + urllib.urlencode(para)
+    
     logging.info(url)
+     
     while success != True and attempts < 3:
         result = json.load(urllib.urlopen(url))
         attempts += 1
 
         if result['status'] == 'OK':
-            return result
+            # Write result back to datastore 
+            duration = result['routes'][0]['legs'][0]['duration']
+            dur_val = duration['value']
+            dur_text = duration['text']
+            # put to datastore
+            dist = Distance(parent=settings.DEFAULT_PARENT_DIST_KEY,
+                            from_id=fr.key.id(),
+                            to_id=to.key.id(),
+                            from_geocode=fr.geocode,
+                            to_geocode=to.geocode,
+                            from_postal=fr.postal,
+                            to_postal=to.postal,
+                            duration_value=dur_val,
+                            duration_text=dur_text)
+            dist.put()
+            dist_dict[key] = dur_val
+
+            return dur_val
 
         elif result['status'] == 'ZERO_RESULTS' and not postal:
-            return find_route(fr, to, depart_time, postal=True)
+            # Retry using postal code
+            return find_route(fr, to, depart_time, dist_dict, postal=True)
 
         elif result['status'] == 'OVER_QUERY_LIMIT':
             time.sleep(3)
@@ -139,66 +219,10 @@ def find_route(fr, to, depart_time, postal=False):
 
     if attempts == 3:
         logging.warning('Direction search limit reached')
-        return None
+        return 9999999
 
-#def find_route(fr, to, depart_time, postal=False):
-#
-#    """find_route(fr, to, depart_time, postal=False) -- Return the json object of the found route
-#    Since we are only using Transit and no Waypoints, there will be only 1 route and within it, only 1 leg
-#    Hence, we can use index [0] to access the element
-#    """
-#    
-#    if postal:
-#        origin = fr.postal.encode('utf-8')
-#        destination = to.postal.encode('utf-8')
-#    else:
-#        origin = fr.address.encode('utf-8')
-#        destination = to.address.encode('utf-8')
-#     
-#    base_url = 'https://maps.googleapis.com/maps/api/directions/json'
-#    para =  {
-#                'origin'            : origin,
-#                'destination'       : destination,
-#                'mode'              :'transit',
-#                'departure_time'    : depart_time,
-#                'region'            : 'sg',
-#                'key'               : settings.API_KEY
-#            }
-#    
-#    attempts = 0
-#    success = False
-#    url = base_url + '?' + urllib.urlencode(para)
-#
-#    dt = datetime.datetime.fromtimestamp(depart_time)
-#    
-#    while success != True and attempts < 3:
-#        result = json.load(urllib.urlopen(url))
-#        attempts += 1
-#
-#        if result['status'] == 'OK':
-#            return result
-#
-#        elif result['status'] == 'ZERO_RESULTS' and not postal:
-#            # Retry using postal code
-#            return find_route(fr, to, depart_time, postal=True)
-#
-#        elif result['status'] == 'OVER_QUERY_LIMIT':
-#            time.sleep(1)
-#            # Retry
-#            continue
-#        success = True
-#
-#    if attempts == 3:
-#        logging.warning('Direction search limit reached')
-#        return None
-
-def dur(result):
-    """Return timedelta object: the duration of the route, extracted from json information"""
-    if (type(result) is not int):
-        result = result['routes'][0]['legs'][0]['duration']['value']
-
-    return datetime.timedelta(seconds=result)
-
+def dur(num):
+    return datetime.timedelta(seconds = num)
 # We give a 4-hour difference between the touchdown time of the user on the first day and the starting time
 # of tour.
 # We also give a 4-hour difference between the last visit and the departure time.
@@ -269,7 +293,10 @@ def generate_trip(start_dt, end_dt, hotel, pref='culture', pace='moderate'):
     places_dict = {place.key.id(): place for place in Place.query(ancestor=settings.DEFAULT_PARENT_KEY)}
     places_dict[0] = hotel
 
-   
+    # Initialise dist_dict
+    quer = Distance.query(ancestor=settings.DEFAULT_PARENT_DIST_KEY)
+    dist_dict = {(p.from_geocode, p.to_geocode): p.duration_value for p in quer}
+
     # Initialise starting datetime and ending datetime according to TIME_DELAY
     start_dt = start_dt + datetime.timedelta(hours=TIME_DELAY)
     end_dt = end_dt - datetime.timedelta(hours=TIME_DELAY)
@@ -335,7 +362,7 @@ def generate_trip(start_dt, end_dt, hotel, pref='culture', pace='moderate'):
                             depart_dt = dt + process(u, pace)
 
                             if not too_late(depart_dt):
-                                route = find_route(v, u, dt_to_epoch(depart_dt))
+                                route = find_route(v, u, dt_to_epoch(depart_dt), dist_dict)
                                 duration_td = dur(route)
                                 
                                 dt_ = max(str_to_td(u.opening) + base_dt, depart_dt + duration_td) 
