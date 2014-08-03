@@ -132,7 +132,7 @@ def find_route(fr, to, depart_time, postal=False):
             return find_route(fr, to, depart_time, postal=True)
 
         elif result['status'] == 'OVER_QUERY_LIMIT':
-            time.sleep(1)
+            time.sleep(3)
             # Retry
             continue
         success = True
@@ -429,7 +429,7 @@ def getGeocode(target, postal=False):
         elif response['status'] == 'ZERO_RESULTS' and not postal:
             return getGeocode(target, postal=True)
         elif response['status'] == 'OVER_QUERY_LIMIT':
-            time.sleep(1)
+            time.sleep(3)
             continue
         success = True
 
