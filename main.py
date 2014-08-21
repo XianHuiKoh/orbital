@@ -262,10 +262,32 @@ class Contact(webapp2.RequestHandler):
         self.show()    
         
 class Attraction(webapp2.RequestHandler):
-    def get(self):
-        template = jinja_environment.get_template("attraction.html")
-        template_values = {}
+
+    def show(self):
+        # Displays the page.
+        places = Place.query(ancestor=settings.DEFAULT_PARENT_KEY).order(Place.name)
+                
+        template_values = {
+            'places': places
+        }
+
+        template = jinja_environment.get_template('attraction.html')
         self.response.write(template.render(template_values))
+
+    def get(self):
+        self.show()
+
+    def post(self):
+        # Retrieve Place property
+        place = Place(parent=settings.DEFAULT_PARENT_KEY)
+
+        place.name              = self.request.get('name').rstrip()
+        place.desc              = self.request.get('desc').rstrip()
+        place.address           = self.request.get('address').rstrip()
+        place.postal            = 'Singapore ' + self.request.get('postal').rstrip() 
+        place.duration          = self.request.get('duration').rstrip()
+        place.opening           = self.request.get('opening').rstrip()
+        place.closing           = self.request.get('closing').rstrip()
 
 app = webapp2.WSGIApplication([
         ('/', MainHandler),

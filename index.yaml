@@ -13,6 +13,11 @@ indexes:
 - kind: Place
   ancestor: yes
   properties:
+  - name: name
+
+- kind: Place
+  ancestor: yes
+  properties:
   - name: popularity
     direction: desc
   - name: name
