@@ -36,6 +36,10 @@ class Place(ndb.Model):
         children(Boolean):      Determine if a place is suitable for children.
         infants(Boolean):       Determine if a place is suitable for infants.
         elderlies(Boolean):     Determine if a place is suitable for elderlies.
+
+        adult_fees(Float):  Adult fee in Singapore Dollar
+        child_fees(Float):  Child fee in Singapore Dollar
+        senior_fees(Float): Senior fee in Singapore Dollar
     """
     name            = ndb.StringProperty()
     desc            = ndb.TextProperty()
@@ -68,6 +72,9 @@ class Place(ndb.Model):
     infants         = ndb.BooleanProperty()
     elderlies       = ndb.BooleanProperty()
     
+    adult_fees      = ndb.FloatProperty()
+    child_fees      = ndb.FloatProperty()
+    senior_fees     = ndb.FloatProperty()
 
 class Hotel(ndb.Model):
     """Datastore model to store Hotel
