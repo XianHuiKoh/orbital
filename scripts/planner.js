@@ -1,4 +1,6 @@
 $(document).ready(function() {
+	var map;
+	var markers = [];
 
 	// Adding vertical tabs
 	$('#menu a').click(function (e) {
@@ -26,7 +28,7 @@ $(document).ready(function() {
 		timeFormat: 'hh:mm tt',
 		minDate: new Date(),
 		stepMinute: 5,
-			
+
 		onClose: function(dateText, inst) {
 			if ($("#end_datepicker").val() != '') {
 				var startDate = $("#start_datepicker").datetimepicker('getDate');
@@ -56,7 +58,7 @@ $(document).ready(function() {
 		onSelect: function(selectedDateTime) {
 			$('#start_datepicker').datetimepicker('option', 'maxDate', $('#end_datepicker').datetimepicker('getDate'));
 		},
-		
+
 		onClose: function(dateText, inst) {
 			if ($("#start_datepicker").val() != '') {
 				var startDate = $("#start_datepicker").datetimepicker('getDate');
@@ -73,174 +75,78 @@ $(document).ready(function() {
 			}
 		}
 	});
-	
-	/*
-	// Implementing sliders for budgets
-	$("#slider-lodging").slider({
-		range: "min",
-		value: 10,
-		min: 1,
-		max: 10000,
-		slide: function( event, ui ) {
-			$( "#lodging" ).val( "$" + ui.value );
-			
-			// Update Total Budget accordingly
-			$( '#total-budget' ).html(	ui.value +
-														$('#slider-fb').slider('value') +
-														$('#slider-shopping').slider('value') +
-														$('#slider-misc').slider('value') );
-		}
+
+	// Budget Slider
+	// ==========================================================================
+	var handlers = [25, 50, 75];
+	var colors = [
+		rgb2hex($("#lodginglbl").css("color")),
+		rgb2hex($("#foodlbl").css("color")),
+		rgb2hex($("#shoppinglbl").css("color")),
+		rgb2hex($("#misclbl").css("color"))
+			];
+	updateColors(handlers);
+	var minWidth = 2;
+	var maxVal = 100;
+	$("#totalBudget").change(function(){
+		updateBudget(handlers);
 	});
 
-	$( "#lodging" ).val( "$" + $( "#slider-lodging" ).slider( "value" ) );
-
-	$("#slider-fb").slider({
-		range: "min",
-		value: 10,
-		min: 1,
-		max: 10000,
-		slide: function( event, ui ) {
-			$( "#fb" ).val( "$" + ui.value );
-			
-			// Update Total Budget accordingly
-			$( '#total-budget' ).html(	ui.value +
-														$('#slider-lodging').slider('value') +
-														$('#slider-shopping').slider('value') +
-														$('#slider-misc').slider('value') );
-		}
-	});
-
-	$( "#fb" ).val( "$" + $( "#slider-fb" ).slider( "value" ) );
-
-	$("#slider-shopping").slider({
-		range: "min",
-		value: 10,
-		min: 1,
-		max: 10000,
-		slide: function( event, ui ) {
-			$( "#shopping" ).val( "$" + ui.value );
-			
-			// Update Total Budget accordingly
-			$( '#total-budget' ).html(	ui.value +
-														$('#slider-lodging').slider('value') +
-														$('#slider-fb').slider('value') +
-														$('#slider-misc').slider('value') );
-
-		}
-	});
-
-	$( "#shopping" ).val( "$" + $( "#slider-shopping" ).slider( "value" ) );
-
-	$("#slider-misc").slider({
-		range: "min",
-		value: 10,
-		min: 1,
-		max: 10000,
-		slide: function( event, ui ) {
-			$( "#misc" ).val( "$" + ui.value );
-
-			// Update Total Budget accordingly
-			$( '#total-budget' ).html(	ui.value +
-														$('#slider-lodging').slider('value') +
-														$('#slider-shopping').slider('value') +
-														$('#slider-fb').slider('value') );
-
-		}
-	});
-
-	$( "#misc" ).val( "$" + $( "#slider-misc" ).slider( "value" ) );
-
-	function update_budget() {
-		$( '#total-budget' ).html(	$('#slider-lodging').slider('value') +
-				$('#slider-fb').slider('value') +
-				$('#slider-shopping').slider('value') +
-				$('#slider-misc').slider('value') );
-	}
-
-	update_budget();
-
-	// If slider input is changed, update the corresponding slider
-	$('.slider-val').change(function () {
-		var value = this.value.substring(1);
-		$('#slider-' + $(this).attr('id')).slider('value', parseInt(value));
-		update_budget();
-	});
-*/
-		// Budget Slider
-		// ==========================================================================
-		var handlers = [25, 50, 75];
-		console.log(rgb2hex($("#lodging").css("backgroundColor")));
-    var colors = [
-										rgb2hex($("#lodginglbl").css("color")),
-										rgb2hex($("#foodlbl").css("color")),
-										rgb2hex($("#shoppinglbl").css("color")),
-										rgb2hex($("#misclbl").css("color"))
-									];
-    updateColors(handlers);
-		var minWidth = 2;
-		var maxVal = 100;
-    $("#totalBudget").change(function(){
-			updateBudget(handlers);
-		});
-		
-		$("#budgetSlider").slider({
-        min: 0,
-        max: maxVal,
-        values: handlers,
-        slide: function (evt, ui) {
-					for (var i=0, l=ui.values.length; i < l; i++){
-						if (i !== l - 1 && ui.values[i] > ui.values[i + 1] - minWidth) {
-							return false;
-            } else if (i === 0 && ui.values[i] < ui.values[i - 1] + minWidth){
-							console.log("This should never happen");
-							return false;
-						} else if (i === 0 && ui.values[i] < minWidth) {
-							return false;
-            } else if (i === l - 1 && ui.values[i] > maxVal - minWidth) {
-							return false;
-						}
-					}
-					updateColors(ui.values);
-					updateBudget(ui.values);
-        },
-				stop: function(event, ui) {
-					updateBudget(ui.values);	
+	$("#budgetSlider").slider({
+		min: 0,
+		max: maxVal,
+		values: handlers,
+		slide: function (evt, ui) {
+			for (var i=0, l=ui.values.length; i < l; i++){
+				if (i !== l - 1 && ui.values[i] > ui.values[i + 1] - minWidth) {
+					return false;
+				} else if (i === 0 && ui.values[i] < ui.values[i - 1] + minWidth){
+					console.log("This should never happen");
+					return false;
+				} else if (i === 0 && ui.values[i] < minWidth) {
+					return false;
+				} else if (i === l - 1 && ui.values[i] > maxVal - minWidth) {
+					return false;
 				}
-    });
-		
-		function updateBudget(values) {
-			var budget = $("#totalBudget").val();
-			console.log(budget);
-			if (budget) {
-				var vals = [];
-				var res = [0]; res = res.concat(values); res.push(maxVal);
-				console.log(res);
-				for (var i = 0; i < res.length - 1; i++) {
-					vals.push(Math.round((res[i+1] - res[i]) * budget / 100));
-				}
-				console.log(values);	
-				console.log(vals);
-				// Update budget with rounding.
-				$("#lodging").val(vals[0]);
-				$("#food").val(vals[1]);
-				$("#shopping").val(vals[2]);
-				$("#misc").val(vals[3]);
 			}
+			updateColors(ui.values);
+			updateBudget(ui.values);
+		},
+		stop: function(event, ui) {
+			updateBudget(ui.values);	
 		}
-    function updateColors(values) {
-        var colorstops = colors[0] + ", "; // start left with the first color
-            for (var i=0, l = values.length; i< l; i++) {
-								colorstops += colors[i] + " " + values[i] + "%,";
-								colorstops += colors[i+1] + " " + values[i] + "%,";
-            }
-            // end with the last color to the right
-            colorstops += colors[colors.length-1];
+	});
 
-            /* Safari 5.1, Chrome 10+ */
-            var css = '-webkit-linear-gradient(left,' + colorstops + ')';
-            $('#budgetSlider').css('background-image', css);
-    }
-  //====================================================================================
+	function updateBudget(values) {
+		var budget = $("#totalBudget").val();
+		if (budget) {
+			var vals = [];
+			var res = [0]; res = res.concat(values); res.push(maxVal);
+			console.log(res);
+			for (var i = 0; i < res.length - 1; i++) {
+				vals.push(Math.round((res[i+1] - res[i]) * budget / 100));
+			}
+			// Update budget with rounding.
+			$("#lodging").val(vals[0]);
+			$("#food").val(vals[1]);
+			$("#shopping").val(vals[2]);
+			$("#misc").val(vals[3]);
+		}
+	}
+	function updateColors(values) {
+		var colorstops = colors[0] + ", "; // start left with the first color
+		for (var i=0, l = values.length; i< l; i++) {
+			colorstops += colors[i] + " " + values[i] + "%,";
+			colorstops += colors[i+1] + " " + values[i] + "%,";
+		}
+		// end with the last color to the right
+		colorstops += colors[colors.length-1];
+
+		/* Safari 5.1, Chrome 10+ */
+		var css = '-webkit-linear-gradient(left,' + colorstops + ')';
+				$('#budgetSlider').css('background-image', css);
+	}
+	//====================================================================================
 
 	// Selects the desired pace
 	$( "#selectable_pace" ).selectable({
@@ -260,118 +166,126 @@ $(document).ready(function() {
 			});
 		}
 	});
-	
-	
+
+
 	$("#generate_button").click(function(){
 		$('form').submit();
 	});
 
 	// Tooltip
-    var tooltips = $( "[title]" ).tooltip({
-      position: {
-        my: "left top",
-        at: "right+5 top-5"
-      }
-    });
+	var tooltips = $( "[title]" ).tooltip({
+		position: {
+			my: "left top",
+			at: "right+5 top-5"
+		}
+	});
 
-	// Singapore map
-	function initialize() {
-  		var myLatlng = new google.maps.LatLng(1.3400,103.8100);
-  		var mapOptions = {
-    		zoom: 11,
-    		center: myLatlng
-  		}
-  		var map = new google.maps.Map(document.getElementById('map_canvas'), mapOptions);
+	//====================================================================
+	$("#place-carousel").owlCarousel({
+		items: 3,
+		loop: true,
+		responsive:{
+        0:{
+            items:1
+        },
+        600:{
+            items:2
+        },            
+        960:{
+            items:3
+        },
+        1200:{
+            items:3
+        }
+    },
+		nav: true,
+		navText: [
+			"<span class='glyphicon glyphicon-chevron-left' ></span>",
+			"<span class='glyphicon glyphicon-chevron-right'></span>"
+		]
+	});
+	$("#place-carousel").on("mousewheel", '.owl-stage', function (e) {
+		if (e.deltaY > 0) {
+			$(this).trigger('next.owl');
+		} else {
+			$(this).trigger('prev.owl');
+		}
+		e.preventDefault();
+	});
 
-  		// Esplanade marker
-  		var esplanadeLatlng = new google.maps.LatLng(1.2894, 103.8570);
-
-  		var esplanademarker = new google.maps.Marker({
-      		position: esplanadeLatlng,
-     		map: map,
-      		title: 'Esplanade - Theatres on the Bay',
-      		animation: google.maps.Animation.DROP
-  		});
-
-  		// Singapore Botanic Garden marker
-  		var botanicLatlng = new google.maps.LatLng(1.3139, 103.8161);
-
-  		var botanicmarker = new google.maps.Marker({
-      		position: botanicLatlng,
-      		map: map,
-      		title: 'Singapore Botanic Garden',
-      		animation: google.maps.Animation.DROP
-  		});
-
-  		// Gardens by the Bay marker
-  		var gardensbythebayLatlng = new google.maps.LatLng(1.2815, 103.8636);
-
-  		var gardensbythebaymarker = new google.maps.Marker({
-     		position: gardensbythebayLatlng,
-      		map: map,
-      		title: 'Gardens by the Bay',
-      		animation: google.maps.Animation.DROP
-  		});
-
-  		// Zoo marker
-  		var zooLatlng = new google.maps.LatLng(1.4045, 103.7929);
-
-  		var zoomarker = new google.maps.Marker({
-      		position: zooLatlng,
-      		map: map,
-      		title: 'Singapore Zoo',
-      		animation: google.maps.Animation.DROP
-  		});
-
-  		// Flyer marker
-  		var flyerLatlng = new google.maps.LatLng(1.2893, 103.8632);
-
-  		var flyermarker = new google.maps.Marker({
-      		position: flyerLatlng,
-      		map: map,
-      		title: 'Singapore Flyer',
-      		animation: google.maps.Animation.DROP
-  		});
-
-  		// Asian Civilations Museum marker
-  		var asiancivilationsmuseumLatlng = new google.maps.LatLng(1.2874, 103.8515);
-
-  		var asiancivilationsmuseummarker = new google.maps.Marker({
-      		position: asiancivilationsmuseumLatlng,
-      		map: map,
-      		title: 'Asian Civilations Museum',
-      		animation: google.maps.Animation.DROP
-  		});
-
-  		// Wild Wild Wet marker
-  		var wildwildwetLatlng = new google.maps.LatLng(1.3775, 103.9541);
-
-  		var wildwildwetmarker = new google.maps.Marker({
-      		position: wildwildwetLatlng,
-      		map: map,
-      		title: 'Wild Wild Wet',
-      		animation: google.maps.Animation.DROP
-  		});
-
-  		// Helix Bridge marker
-  		var helixbridgeLatlng = new google.maps.LatLng(1.2873, 103.8605);
-
-  		var helixbridgemarker = new google.maps.Marker({
-      		position: helixbridgeLatlng,
-      		map: map,
-      		title: 'The Helix Bridge',
-      		animation: google.maps.Animation.DROP
-  		});
+	function getPlaceIndex(id) {
+		return parseInt(id.split('-', 2)[1]);
 	}
-	
-	function rgb2hex(rgb) {
-    if (/^#[0-9A-F]{6}$/i.test(rgb)) return rgb;
 
-    rgb = rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
-    function hex(x) {
-        return ("0" + parseInt(x).toString(16)).slice(-2);
-    }
-    return "#" + hex(rgb[1]) + hex(rgb[2]) + hex(rgb[3]);
+	function displayMarker(index) {
+		for (var i in markers) markers[i].setMap(null);
+		markers[index].setMap(map);
+	}
+	$(".places").hover(function() {
+		displayMarker(getPlaceIndex($(this).attr('id')));
+	});
+
+	$(".places").click(function() {
+		// Adding marker for active selection
+		$(".places").addClass('inactive').removeClass('active');
+		$(this).removeClass('inactive').addClass('active');
+
+		// Getting the index of the place being click
+		var index = getPlaceIndex($(this).attr("id"));	
+		// Display associated marker
+		displayMarker(index);
+
+		// Check if it is displayed
+		if (!$("#detailPanel").is(":visible")) {
+			// Open the detailPanel
+			$("#detailPanel").fadeToggle("fast");
+		}
+
+		var place = places_list[index];
+		// Change title into place name
+		$("#headerPanel").html(place.name);	
+		// Content
+		$("#detailAddress").html(place.address);
+		$("#detailOpeningHours").html(place.opening + " - " + place.closing);
+		$("#detailDesc").html(place.desc);
+	});
+	
+	$("#displayPanelClose").click(function() {
+		$("#detailPanel").fadeToggle("fast");
+	});
+
+	/*
+	 * Initialise all marker with the same index as place index
+	 */
+	function initialize() {
+		var singapore = new google.maps.LatLng(1.3400, 103.8100);
+		var mapOptions = {
+			zoom: 11,
+			center: singapore
+		}
+		map = new google.maps.Map(document.getElementById('map_canvas'), mapOptions);
+		
+		for (var i in places_list) {
+			var place = places_list[i];
+			var geo = place.geocode.split(',', 2);
+			var loc = new google.maps.LatLng(parseFloat(geo[0]), parseFloat(geo[1]));
+			var marker = new google.maps.Marker({
+				position: loc,
+				title: place.name 
+			});
+			markers.push(marker);
+		}
+	}
+
+
+	function rgb2hex(rgb) {
+		if (/^#[0-9A-F]{6}$/i.test(rgb)) return rgb;
+
+		rgb = rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
+		function hex(x) {
+			return ("0" + parseInt(x).toString(16)).slice(-2);
+		}
+		return "#" + hex(rgb[1]) + hex(rgb[2]) + hex(rgb[3]);
 	}
 	initialize();
 });

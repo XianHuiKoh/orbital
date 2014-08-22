@@ -3,196 +3,238 @@
 {% block title %}Planner{% endblock %}
 {% block links %}
 <link type="text/css" rel="stylesheet" href="../stylesheets/planner.css">
+
+<!-- Basic stylesheet -->
+<link rel="stylesheet" href="../jquery/owl-carousel/css/owl.carousel.css">
+
+<!-- Default theme -->
+<link rel="stylesheet" href="../jquery/owl-carousel/css/owl.theme.default.css">
+
 {% endblock %}
 
 {% block content %}
 <div class="row">
-	<div class="col-md-2">
-		<div id="tabs">
-			<!-- Vertical Tabs -->
-			<ul class="nav nav-pills nav-stacked" id="menu">
-				<li class="active"><a href="#home">Home</a></li>	
-				<li><a href="#date">Date &amp; Time</a></li>
-				<li><a href="#budget">Budget</a></li>
-				<li><a href="#preference">Preference</a></li>
-				<li><a href="#miscellaneous">Miscellaneous</a></li>
-			</ul>
-		</div>
-		<hr>
-		<div class="text-center">
-			<label for="generate" title="Have you filled in all fields required in the 'Date & Time', 'Budget', 'Preference' and 'Miscellaneous' tabs? If yes, click on the button!">
-			<button type="button" class="btn btn-success btn-lg" id="generate_button" data-loading-text="Hooray!!!" type="submit">
-				Generate Trip</button>
-			</label>
-		</div>
-	</div>
-	<div class="col-md-4">
-		<div class="tab-content">
-			<!-- Home -->
-			<div class="tab-pane active" id="home">
-				<h2>Home</h2>
-				<h3>Date &amp; Time</h3>
-				<p>Fill in your starting date and ending date of your tour at this tab.</p>
-				<h3>Budget</h3>
-				<p>Slide the bar at this tab to indicate your desired budget.</p>
-				<h3>Preference</h3>
-				<p>Choose your desired pace and preference of your tour at this tab. </p>
-				<h3>Miscellaneous</h3>
-				<p>Indicate who you are travelling at this tab to get a tour generated according to your needs!</p>
-				<br>
-				<p>Proceed by filling in the fields in the individual tabs on the left side of the page. Thank you!</p>
-			</div>
+	<div class="col-md-6" id="leftPanel">
 
-			<!-- Date and Time -->
-			<div class="tab-pane" id="date">
-				<h2>Date &amp; Time</h2>
-				<form class="form-horizontal" action='/yourtrip' method='post'>
-					<fieldset>
-						<div class="form-group">
-							<label for="from">From:</label>
-							<input type="text" id="start_datepicker" name="start_datetime" class="form-control" title="Please click to select your respective start date and time of your tour from the calendar input."/>
-						</div>
-						<div class="form-group">
-							<label for="to">To:</label>
-							<input type="text" id="end_datepicker" name="end_datetime" class="form-control" title="Please click to select your respective end date and time of your tour from the calendar input."/>
-						</div>
-						<div>
-							<label for="duration">Duration (in days):</label>
-							<input id="inputDuration" class="form-control" type="number" name="duration" readonly title="This is the calculated days of your tour here in Singapore. Your ideal schedule will be generated for you based on the duration of your stay here. Proceed by clicking on the 'Budget' tab.">
-						</div>
-					</fieldset>
-					<!--/form-->
+				<div class="row">
+			<div class="col-md-4">
+				<div id="tabs">
+					<!-- Vertical Tabs -->
+					<ul class="nav nav-pills nav-stacked" id="menu">
+						<li class="active"><a href="#home">Home</a></li>	
+						<li><a href="#date">Date &amp; Time</a></li>
+						<li><a href="#budget">Budget</a></li>
+						<li><a href="#preference">Preference</a></li>
+						<li><a href="#miscellaneous">Miscellaneous</a></li>
+					</ul>
+				</div>
+				<hr>
+				<div class="text-center">
+					<label for="generate" title="Have you filled in all fields required in the 'Date & Time', 'Budget', 'Preference' and 'Miscellaneous' tabs? If yes, click on the button!">
+						<button type="button" class="btn btn-success btn-lg" id="generate_button" data-loading-text="Hooray!!!" type="submit">
+							Generate Trip</button>
+					</label>
+				</div>
 			</div>
+			<div class="col-md-8">
+				<div class="tab-content">
+					<!-- Home -->
+					<div class="tab-pane active" id="home">
+						<h2>Home</h2>
+						<h3>Date &amp; Time</h3>
+						<p>Fill in your starting date and ending date of your tour at this tab.</p>
+						<h3>Budget</h3>
+						<p>Slide the bar at this tab to indicate your desired budget.</p>
+						<h3>Preference</h3>
+						<p>Choose your desired pace and preference of your tour at this tab. </p>
+						<h3>Miscellaneous</h3>
+						<p>Indicate who you are travelling at this tab to get a tour generated according to your needs!</p>
+						<br>
+						<p>Proceed by filling in the fields in the individual tabs on the left side of the page. Thank you!</p>
+					</div>
 
-				<!-- Budget -->
-				<div class="tab-pane" id="budget">
-					<h2>Budget</h2>
-					<div class="text-center">
-						<h4>
-							<strong><label class="control-label" for="totalBudget" title="This is your overall assigned budget.">Total Budget</label>
-								<hr>
-								<div class="input-group">
-									<div class="input-group-addon">$</div>
-									<input id="totalBudget" type="number" class="form-control text-center" min="4">
+					<!-- Date and Time -->
+					<div class="tab-pane" id="date">
+						<h2>Date &amp; Time</h2>
+						<form class="form-horizontal" action='/yourtrip' method='post'>
+							<fieldset>
+								<div class="form-group">
+									<label for="from">From:</label>
+									<input type="text" id="start_datepicker" name="start_datetime" class="form-control" title="Please click to select your respective start date and time of your tour from the calendar input."/>
 								</div>
-							</strong>
-						</h4>
-						<div id="budgetSlider"></div>
-					</div>
-
-					<hr>
-
-					<div class="form-group">				
-						<label id="lodginglbl" class="control-label col-xs-4" for="lodging" title="Please slide to select your assigned budget for lodging purposes.">Lodging:</label>
-						<div class="col-xs-8">
-							<div class="input-group">
-								<div class="input-group-addon">$</div>
-								<input id="lodging" class="form-control text-right" readonly>
-							</div>
+								<div class="form-group">
+									<label for="to">To:</label>
+									<input type="text" id="end_datepicker" name="end_datetime" class="form-control" title="Please click to select your respective end date and time of your tour from the calendar input."/>
+								</div>
+								<div>
+									<label for="duration">Duration (in days):</label>
+									<input id="inputDuration" class="form-control" type="number" name="duration" readonly title="This is the calculated days of your tour here in Singapore. Your ideal schedule will be generated for you based on the duration of your stay here. Proceed by clicking on the 'Budget' tab.">
+								</div>
+							</fieldset>
+							<!--/form-->
 						</div>
-					</div>
-					
-					<hr>
 
-					<div class="form-group">				
-						<label id="foodlbl" class="control-label col-xs-4" for="food" title="Please slide to select your assigned budget for lodging purposes.">Food:</label>
-						<div class="col-xs-8">
-							<div class="input-group">
-								<div class="input-group-addon">$</div>
-								<input id="food" class="form-control text-right" readonly>
+						<!-- Budget -->
+						<div class="tab-pane" id="budget">
+							<h2>Budget</h2>
+							<div class="text-center">
+								<h4>
+									<strong><label class="control-label" for="totalBudget" title="This is your overall assigned budget.">Total Budget</label>
+										<hr>
+										<div class="input-group">
+											<div class="input-group-addon">$</div>
+											<input id="totalBudget" type="number" class="form-control text-center" min="4">
+										</div>
+									</strong>
+								</h4>
+								<div id="budgetSlider"></div>
 							</div>
-						</div>
-					</div>
 
-					<hr>
+							<hr>
 
-					<div class="form-group">				
-						<label id="shoppinglbl" class="control-label col-xs-4" for="shopping" title="Please slide to select your assigned budget for lodging purposes.">Shopping:</label>
-						<div class="col-xs-8">
-							<div class="input-group">
-								<div class="input-group-addon">$</div>
-								<input id="shopping" class="form-control text-right" readonly>
+							<div class="form-group">				
+								<label id="lodginglbl" class="control-label col-xs-4" for="lodging" title="Please slide to select your assigned budget for lodging purposes.">Lodging:</label>
+								<div class="col-xs-8">
+									<div class="input-group">
+										<div class="input-group-addon">$</div>
+										<input id="lodging" class="form-control text-right" readonly>
+									</div>
+								</div>
 							</div>
-						</div>
-					</div>
 
-					<div class="form-group">				
-						<label id="misclbl" class="control-label col-xs-4" for="misc" title="Please slide to select your assigned budget for lodging purposes.">Miscellaneous:</label>
-						<div class="col-xs-8">
-							<div class="input-group">
-								<div class="input-group-addon">$</div>
-								<input id="misc" class="form-control text-right" readonly>
+							<hr>
+
+							<div class="form-group">				
+								<label id="foodlbl" class="control-label col-xs-4" for="food" title="Please slide to select your assigned budget for lodging purposes.">Food:</label>
+								<div class="col-xs-8">
+									<div class="input-group">
+										<div class="input-group-addon">$</div>
+										<input id="food" class="form-control text-right" readonly>
+									</div>
+								</div>
 							</div>
-						</div>
-					</div>
 
+							<hr>
+
+							<div class="form-group">				
+								<label id="shoppinglbl" class="control-label col-xs-4" for="shopping" title="Please slide to select your assigned budget for lodging purposes.">Shopping:</label>
+								<div class="col-xs-8">
+									<div class="input-group">
+										<div class="input-group-addon">$</div>
+										<input id="shopping" class="form-control text-right" readonly>
+									</div>
+								</div>
+							</div>
+
+							<div class="form-group">				
+								<label id="misclbl" class="control-label col-xs-4" for="misc" title="Please slide to select your assigned budget for lodging purposes.">Miscellaneous:</label>
+								<div class="col-xs-8">
+									<div class="input-group">
+										<div class="input-group-addon">$</div>
+										<input id="misc" class="form-control text-right" readonly>
+									</div>
+								</div>
+							</div>
+
+						</div>
+
+
+						<!-- Preference -->
+						<div class="tab-pane" id="preference">
+							<h2>Preference</h2>
+							<p><label for="pace" title="Please select your desired pace for your designed tour.">Pace:</label></p>
+							<ol id="selectable_pace">
+								<li class="ui-widget-content" title="This is the slow pace where you can relax and take your own time enjoying the whole tour. Suitable for tourists who come here with a purpose of releasing stress or for a holiday.">Slow</li>
+								<li class="ui-widget-content" title="This is the moderate pace, A.K.A, the just-nice pace.">Moderate</li>
+								<li class="ui-widget-content" title="This is the fast pace, the'kan cheong (Singlish for urgent)' pace.">Fast</li>
+								<li class="ui-widget-content" title="This is the hectic pace.">Hectic</li>
+							</ol>
+							<input id="pace_input" name="pace_input" type="hidden">			
+							<p><label for="preference" title="Please select your preference for your designed tour.">Style:</label></p>
+							<ol id="selectable_preference">
+								<li class="ui-widget-content" title="The 'Nature' option, where you will see Singapore's most beautiful greenery and flowers.">Nature</li>
+								<li class="ui-widget-content"title="The 'Shopping' option, where you will be able to shop as much as you like.">Shopping</li>
+								<li class="ui-widget-content" title="The 'Culture' option, where you can explore and understand more about Singapore's culture.">Culture</li>
+								<li class="ui-widget-content" title="The 'Family' option, where you can spend time bonding your family together.">Family</li>
+								<li class="ui-widget-content" title="The 'Romance' option, where you can spend time together with your loved one.">Romance</li>
+								<li class="ui-widget-content" title="The 'Food' option, where you can enjoy all the delicacies here in Singapre.">Food</li>
+							</ol>
+							<input id="preference_input" type="hidden" name="preference_input">
+						</div>
+
+						<!-- Miscellaneous -->
+						<div class="tab-pane" id="miscellaneous">
+							<h2>Miscellaneous</h2>
+							<!--form-->
+							<br>
+							<div class="checkbox">
+								<label>
+									<input type="checkbox" value="T" name="handicapped" title="Tick if you are travelling with handicapped individuals to generate a handicapped friendly tour."> Travelling with handicapped individuals. 
+								</label>
+							</div>
+
+							<hr>
+
+							<div class="checkbox">
+								<label>
+									<input type="checkbox" value="T" name="elderlies" title="Tick if you are travelling with elderlies to generate a tour suitable for elderlies. "> Travelling with elderlies. 
+								</label>
+							</div>
+
+							<hr>
+
+							<div class="checkbox">
+								<label>
+									<input type="checkbox" value="T" name="infants" title="Tick if you are travelling with infants to generate a tour suitable for infants."> Travelling with infants. 
+								</label>
+							</div>
+
+							<hr>
+
+							<div class="checkbox">
+								<label>
+									<input type="checkbox" value="T" name="children" title="Tick if you are travelling with children to generate a tour that is friendly for children."> Travelling with children. 
+								</label>
+							</div>
+						</form>
+					</div>
 				</div>
-				
-				
-				<!-- Preference -->
-				<div class="tab-pane" id="preference">
-					<h2>Preference</h2>
-					<p><label for="pace" title="Please select your desired pace for your designed tour.">Pace:</label></p>
-						<ol id="selectable_pace">
-							<li class="ui-widget-content" title="This is the slow pace where you can relax and take your own time enjoying the whole tour. Suitable for tourists who come here with a purpose of releasing stress or for a holiday.">Slow</li>
-							<li class="ui-widget-content" title="This is the moderate pace, A.K.A, the just-nice pace.">Moderate</li>
-							<li class="ui-widget-content" title="This is the fast pace, the'kan cheong (Singlish for urgent)' pace.">Fast</li>
-							<li class="ui-widget-content" title="This is the hectic pace.">Hectic</li>
-						</ol>
-						<input id="pace_input" name="pace_input" type="hidden">			
-					<p><label for="preference" title="Please select your preference for your designed tour.">Style:</label></p>
-						<ol id="selectable_preference">
-							<li class="ui-widget-content" title="The 'Nature' option, where you will see Singapore's most beautiful greenery and flowers.">Nature</li>
-							<li class="ui-widget-content"title="The 'Shopping' option, where you will be able to shop as much as you like.">Shopping</li>
-							<li class="ui-widget-content" title="The 'Culture' option, where you can explore and understand more about Singapore's culture.">Culture</li>
-							<li class="ui-widget-content" title="The 'Family' option, where you can spend time bonding your family together.">Family</li>
-							<li class="ui-widget-content" title="The 'Romance' option, where you can spend time together with your loved one.">Romance</li>
-							<li class="ui-widget-content" title="The 'Food' option, where you can enjoy all the delicacies here in Singapre.">Food</li>
-						</ol>
-						<input id="preference_input" type="hidden" name="preference_input">
-				</div>
-
-				<!-- Miscellaneous -->
-				<div class="tab-pane" id="miscellaneous">
-					<h2>Miscellaneous</h2>
-					<!--form-->
-					<br>
-					<div class="checkbox">
-						<label>
-							<input type="checkbox" value="T" name="handicapped" title="Tick if you are travelling with handicapped individuals to generate a handicapped friendly tour."> Travelling with handicapped individuals. 
-						</label>
-					</div>
-					
-					<hr>
-					
-					<div class="checkbox">
-						<label>
-							<input type="checkbox" value="T" name="elderlies" title="Tick if you are travelling with elderlies to generate a tour suitable for elderlies. "> Travelling with elderlies. 
-						</label>
-					</div>
-
-					<hr>
-
-					<div class="checkbox">
-						<label>
-							<input type="checkbox" value="T" name="infants" title="Tick if you are travelling with infants to generate a tour suitable for infants."> Travelling with infants. 
-						</label>
-					</div>
-
-					<hr>
-
-					<div class="checkbox">
-						<label>
-							<input type="checkbox" value="T" name="children" title="Tick if you are travelling with children to generate a tour that is friendly for children."> Travelling with children. 
-						</label>
-					</div>
-				</form>
 			</div>
+
+			<div class="panel panel-default" id="detailPanel">
+				<div class="panel-heading">
+					<button id="displayPanelClose" type="button" class="close">&times;</button>
+					<h2 class="panel-title text-center" id="headerPanel">Place Name</h2>
+				</div>
+
+				<div class="panel-body" id="displayPanel">
+					<h5><strong>Address: </strong></h5>
+					<div id="detailAddress" class="displayContent"></div>
+					<hr>
+					<h5><strong>Opening Hours: </strong></h5>
+					<div id="detailOpeningHours" class="displayContent"></div>
+					<hr>
+					<h5><strong>Description: </strong></h5>
+					<div id="detailDesc" class="displayContent"></div>
+					<hr>
+					<div id="detailImage" class="text-center displayContent">
+						<img src="../images/homefront.jpg" class="img-responsive" alt="">
+					</div>
+				</div>
+			</div>
+
 		</div>
 	</div>
 	<div class="col-md-6">
-		<div id="map_canvas">
+		<div id="place-carousel" class="owl-carousel ">
+			{% for place in places %}
+			<div class="places" id="place-{{loop.index0}}">
+				<img src="{{place.image_url}}" class="img-responsive" alt="{{place.name}}">
+			</div>
+			{% endfor %}
 		</div>
+
+		<div id="map_canvas"></div>
 	</div>
 </div>
 {% endblock %}
@@ -200,4 +242,12 @@
 {% block scripts %}
 <script type="text/javascript" src="../jquery/jquery-ui-1.11.0.custom/jquery-ui-timepicker-addon.js"></script>
 <script type="text/javascript" src="../scripts/planner.js"></script>
+<script type="text/javascript" src="../jquery/owl-carousel/jquery.mousewheel.js"></script>
+<script type="text/javascript" src="../jquery/owl-carousel/js/owl.carousel.js"></script>
+<script type="text/javascript">
+	var places_list = [];
+	{% for place_json in places_json %}
+	places_list.push({{place_json|tojson|safe}});
+	{% endfor %}
+</script>
 {% endblock %}
