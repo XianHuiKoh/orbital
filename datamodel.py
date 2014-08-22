@@ -7,8 +7,11 @@ class Place(ndb.Model):
         desc(Text):         A brief text description of the place.
         address(String):    Address of the place
         postal(String):     Postal code of the place. 6-digit number
+        geocode(String):    Geocode formatted as "xxxxx,xxxx"
+
         popularity(Float):  A score of how popular the place is. Used in calculation of preference scored.
-        image(String):      Name of image stored in static folder /images
+        image_url(String):  Name of image stored in static folder /images
+        image(Blob):        Actual image
         loc_type(String):   Property of a place. Either 'Outdoor', 'Indoor', or 'Both'.
         duration(String):   (in minute) A suggested duration to spend at a place.
         opening(String):    (in minute) Opening hours. Absolute minute from 00:00.
@@ -41,7 +44,8 @@ class Place(ndb.Model):
     geocode         = ndb.StringProperty()
 
     popularity      = ndb.FloatProperty()
-    image           = ndb.StringProperty()
+    image_url       = ndb.StringProperty()
+    image           = ndb.BlobProperty()
     loc_type        = ndb.StringProperty()
     duration        = ndb.StringProperty()
     opening         = ndb.StringProperty()
