@@ -94,61 +94,6 @@ def process(place, pace='moderate'):
     d = datetime.timedelta(seconds=d.total_seconds() * locals()[pace])
     return d
 
-#@memoized_route
-#def find_route2(fr, to, depart_time, postal=False):
-#    """find_route(fr, to, depart_time, postal=False) -- Return the json object of the found route
-#    Since we are only using Transit and no Waypoints, there will be only 1 route and within it, only 1 leg
-#    Hence, we can use index [0] to access the element
-#    """
-#    if not postal:
-#        origin = fr.geocode
-#        destination = to.geocode
-#    else:
-#        origin = fr.postal
-#        destination = to.postal
-#     
-#    base_url = 'https://maps.googleapis.com/maps/api/directions/json'
-#    para =  {
-#                'origin'            : origin,
-#                'destination'       : destination,
-#                'mode'              :'transit',
-#                'departure_time'    : depart_time,
-#                'region'            : 'sg',
-#                'key'               : settings.API_KEY
-#            }
-#    
-#    attempts = 0
-#    success = False
-#    url = base_url + '?' + urllib.urlencode(para)
-#    logging.info(url)
-#    while success != True and attempts < 3:
-#        result = json.load(urllib.urlopen(url))
-#        attempts += 1
-#
-#        if result['status'] == 'OK':
-#            return result
-#
-#        elif result['status'] == 'ZERO_RESULTS' and not postal:
-#            return find_route(fr, to, depart_time, postal=True)
-#
-#        elif result['status'] == 'OVER_QUERY_LIMIT':
-#            time.sleep(3)
-#            # Retry
-#            continue
-#        success = True
-#
-#    if attempts == 3:
-#        logging.warning('Direction search limit reached')
-#        return None
-#
-#def dur(result):
-#    """Return timedelta object: the duration of the route, extracted from json information"""
-#    if (type(result) is not int):
-#        result = result['routes'][0]['legs'][0]['duration']['value']
-#
-#    return datetime.timedelta(seconds=result)
-
-
 def find_route(fr, to, depart_time, dist_dict, postal=False):
     """find_route(fr, to, depart_time, postal=False) -- Return the json object of the found route
     Since we are only using Transit and no Waypoints, there will be only 1 route and within it, only 1 leg
