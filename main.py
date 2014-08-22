@@ -52,8 +52,6 @@ class PlaceEntry(webapp2.RequestHandler):
         places = Place.query(ancestor=settings.DEFAULT_PARENT_KEY).order(-Place.popularity, Place.name)
         
         places_dict = {place.key.id(): place for place in Place.query(ancestor=settings.DEFAULT_PARENT_KEY)}
-        for k, v in places_dict.items():
-            logging.info(v)
         
         template_values = {
             'places': places
@@ -74,7 +72,7 @@ class PlaceEntry(webapp2.RequestHandler):
         place.address           = self.request.get('address').rstrip()
         place.postal            = 'Singapore ' + self.request.get('postal').rstrip()
         place.popularity        = float(self.request.get('popularity'))
-        place.image             = self.request.get('image').rstrip()
+        place.image_url         = self.request.get('image').rstrip()
         place.loc_type          = self.request.get('loc_type').rstrip()
         place.duration          = self.request.get('duration').rstrip()
         place.opening           = self.request.get('opening').rstrip()
@@ -113,7 +111,17 @@ class MainHandler(webapp2.RequestHandler):
 class Planner(webapp2.RequestHandler):
     def get(self):
         template = jinja_environment.get_template("planner.html")
-        template_values = {}
+        places = Place.query(ancestor=settings.DEFAULT_PARENT_KEY).order(-Place.popularity, Place.name)
+        
+        def dump(obj):
+            return obj.to_dict()
+
+        places_json = places.map(dump);
+
+        template_values = {
+                            "places": places, 
+                            "places_json": places_json
+                            }
         self.response.write(template.render(template_values))
 
    
@@ -171,7 +179,7 @@ class YourTrip(webapp2.RequestHandler):
                             "preference": preference,
                             "pace": pace
                         }
-        #initerary = find_route()
+
         template_values = {
             'trip': trip,
             'tourNum': len(trip),
@@ -205,7 +213,8 @@ class MassEntry(webapp2.RequestHandler):
                 place.evening = 0.25
                 
                 place.geocode = algorithm.getGeocode(place)
-
+                
+                # Getting image 
                 place.put()
 
             infile.close()
@@ -262,32 +271,11 @@ class Contact(webapp2.RequestHandler):
         self.show()    
         
 class Attraction(webapp2.RequestHandler):
-
-    def show(self):
-        # Displays the page.
-        places = Place.query(ancestor=settings.DEFAULT_PARENT_KEY).order(Place.name)
-                
-        template_values = {
-            'places': places
-        }
-
-        template = jinja_environment.get_template('attraction.html')
-        self.response.write(template.render(template_values))
-
     def get(self):
-        self.show()
-
-    def post(self):
-        # Retrieve Place property
-        place = Place(parent=settings.DEFAULT_PARENT_KEY)
-
-        place.name              = self.request.get('name').rstrip()
-        place.desc              = self.request.get('desc').rstrip()
-        place.address           = self.request.get('address').rstrip()
-        place.postal            = 'Singapore ' + self.request.get('postal').rstrip() 
-        place.duration          = self.request.get('duration').rstrip()
-        place.opening           = self.request.get('opening').rstrip()
-        place.closing           = self.request.get('closing').rstrip()
+        template = jinja_environment.get_template("attraction.html")
+        places = Place.query(ancestor=settings.DEFAULT_PARENT_KEY).order(Place.name)
+        template_values = {"places": places}
+        self.response.write(template.render(template_values))
 
 app = webapp2.WSGIApplication([
         ('/', MainHandler),
